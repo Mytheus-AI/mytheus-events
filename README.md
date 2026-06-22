@@ -1,4 +1,4 @@
-# Reprise AI — Event Contracts (`reprise-events`)
+# Reprise AI - Event Contracts (`reprise-events`)
 
 The single home for every Reprise AI event contract: the Avro schemas, Schema Registry subjects, topic taxonomy, partition-key conventions, and the outbox/inbox/DLQ delivery contract that every service produces and consumes against.
 
@@ -6,13 +6,13 @@ The single home for every Reprise AI event contract: the Avro schemas, Schema Re
 
 `reprise-events` is the **event contracts & schema registry** repo for Reprise AI (internal codename NEXUS). It owns:
 
-- **Avro schemas** — the value schema for every Redpanda topic, opening with the shared `EventEnvelopeHeader` and a topic-specific payload.
-- **Schema Registry subjects** — one subject per topic, named `{topic}-value`, registered under **BACKWARD** compatibility.
-- **The topic taxonomy** — the canonical list of every topic, its producer, its consumers, its partition key, its retention, and its delivery/idempotency rule.
-- **The delivery contract** — the transactional outbox on produce, the inbox + Redis dedupe on consume, and the per-topic DLQ that every service honors.
-- **Generated client types** — the source of generated Python and TypeScript producer/consumer types that `reprise-backend`, `reprise-intelligence`, and `reprise-realtime` depend on.
+- **Avro schemas** - the value schema for every Redpanda topic, opening with the shared `EventEnvelopeHeader` and a topic-specific payload.
+- **Schema Registry subjects** - one subject per topic, named `{topic}-value`, registered under **BACKWARD** compatibility.
+- **The topic taxonomy** - the canonical list of every topic, its producer, its consumers, its partition key, its retention, and its delivery/idempotency rule.
+- **The delivery contract** - the transactional outbox on produce, the inbox + Redis dedupe on consume, and the per-topic DLQ that every service honors.
+- **Generated client types** - the source of generated Python and TypeScript producer/consumer types that `reprise-backend`, `reprise-intelligence`, and `reprise-realtime` depend on.
 
-It is the **shared event vocabulary for all services** — the engineering realization of the frozen `_canon/03-event-taxonomy.md`. No service may invent a topic, rename a field, or break a subject; the contract lives here.
+It is the **shared event vocabulary for all services** - the engineering realization of the frozen `_canon/03-event-taxonomy.md`. No service may invent a topic, rename a field, or break a subject; the contract lives here.
 
 ## The topic catalog
 
@@ -53,7 +53,7 @@ Every topic is partitioned by `org_id` (the tenant UUID string). Delivery is **a
 
 ## Conventions
 
-- **Avro values.** Every event value opens with the shared `EventEnvelopeHeader` (namespace `io.nexus.events`) then a topic-specific `payload`. No key schemas — the partition key is the raw `org_id` UUID string.
+- **Avro values.** Every event value opens with the shared `EventEnvelopeHeader` (namespace `io.nexus.events`) then a topic-specific `payload`. No key schemas - the partition key is the raw `org_id` UUID string.
 - **One subject per topic.** Subjects are named `{topic}-value`. There is exactly one value subject per topic.
 - **BACKWARD compatibility.** A new consumer schema can always read data written by the previous producer schema. Additive, default-bearing changes only.
 - **Partitioned by tenant.** Every topic is partitioned by `org_id`. `org_id` is mandatory on every event for tenant partitioning and isolation. No cross-tenant topic mixing.
@@ -61,9 +61,9 @@ Every topic is partitioned by `org_id` (the tenant UUID string). Delivery is **a
 
 ## Tech stack
 
-- **Avro** — the value serialization format for every topic.
-- **Confluent/Redpanda Schema Registry** — subject registry and BACKWARD compatibility enforcement; the Confluent wire format (magic byte + schema id) lets consumers resolve the exact writer schema.
-- **Code generation** — generated **Python** (pydantic / dataclasses) and **TypeScript** client types for producers and consumers, published as packages the other repos depend on.
+- **Avro** - the value serialization format for every topic.
+- **Confluent/Redpanda Schema Registry** - subject registry and BACKWARD compatibility enforcement; the Confluent wire format (magic byte + schema id) lets consumers resolve the exact writer schema.
+- **Code generation** - generated **Python** (pydantic / dataclasses) and **TypeScript** client types for producers and consumers, published as packages the other repos depend on.
 
 ## Repo structure
 
@@ -98,7 +98,7 @@ make register            # publishes {topic}-value to the Schema Registry
 make codegen             # Python (pydantic/dataclasses) + TypeScript types
 ```
 
-To **add a topic**, you must first land it in `_canon/03-event-taxonomy.md` — topic names and partition keys are frozen there. This repo only realizes the canon; it never invents a topic.
+To **add a topic**, you must first land it in `_canon/03-event-taxonomy.md` - topic names and partition keys are frozen there. This repo only realizes the canon; it never invents a topic.
 
 ## Versioning & evolution
 
@@ -115,21 +115,21 @@ The compatibility rule is **BACKWARD**, enforced in CI against the registered su
 
 - Add a required field **without** a default (breaks every lagging consumer).
 - Remove a non-defaulted field.
-- Rename a field (that is a remove + add — handle it as a Glossary entry + ADR first).
+- Rename a field (that is a remove + add - handle it as a Glossary entry + ADR first).
 - Narrow a type.
 
 To **add a field safely**: append it to the payload record with a default (or a `["null", T]` union defaulting to `null`), bump `schema_version`, run `check-compatibility`, register the new subject version, regenerate clients.
 
 ## Related repos
 
-- `reprise-backend` — CRUD / control-plane services (core-api, identity-tenant, meeting, billing-metering, integration, admin-ops, notification).
-- `reprise-intelligence` — AI / inference tier (agent-runtime, embedding, reranker, rag, ingestion, knowledge-graph, search).
-- `reprise-realtime` — realtime-gateway and transcription-service (WebSocket + live transcription).
-- `reprise-events` — **this repo**: event contracts, Avro schemas, Schema Registry subjects, delivery contract.
-- `reprise-platform` — infrastructure, Terraform/Kubernetes, Redpanda cluster, CI/CD.
-- `reprise-ui` — Next.js 14 web application (meeting room, agent sidebar).
-- `reprise-mobile` — mobile client.
-- `reprise-docs` — architecture documentation and ADRs.
+- `reprise-backend` - CRUD / control-plane services (core-api, identity-tenant, meeting, billing-metering, integration, admin-ops, notification).
+- `reprise-intelligence` - AI / inference tier (agent-runtime, embedding, reranker, rag, ingestion, knowledge-graph, search).
+- `reprise-realtime` - realtime-gateway and transcription-service (WebSocket + live transcription).
+- `reprise-events` - **this repo**: event contracts, Avro schemas, Schema Registry subjects, delivery contract.
+- `reprise-platform` - infrastructure, Terraform/Kubernetes, Redpanda cluster, CI/CD.
+- `reprise-ui` - Next.js 14 web application (meeting room, agent sidebar).
+- `reprise-mobile` - mobile client.
+- `reprise-docs` - architecture documentation and ADRs.
 
 ## License
 

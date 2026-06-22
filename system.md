@@ -1,4 +1,4 @@
-# Reprise AI — Event Contracts: System Design (`reprise-events`)
+# Reprise AI - Event Contracts: System Design (`reprise-events`)
 
 Deep reference for the event contracts that bind every Reprise AI service together. This repo is the single source of event truth, downstream of the frozen `_canon/03-event-taxonomy.md` and `07-event-architecture.md`. Every topic name, partition key, and Avro field name is reproduced here verbatim from the canon.
 
@@ -224,19 +224,19 @@ At-least-once is the only honest guarantee across a network with retries, rebala
 
 ### Transactional outbox (produce side)
 
-A producer never does "write DB, then publish" as two steps. The state change and the outbox row commit in **one** Postgres transaction; a separate relay publishes the outbox row to Redpanda. The relay is at-least-once to the bus — a crash after produce but before marking published re-publishes on restart, which the consumer side absorbs. The outbox row carries `org_id`, `topic`, `partition_key` (the `org_id` string), `idempotency_key`, `schema_subject` (`{topic}-value`), and the payload. A unique index `(topic, idempotency_key)` means a double-confirm cannot enqueue a second event.
+A producer never does "write DB, then publish" as two steps. The state change and the outbox row commit in **one** Postgres transaction; a separate relay publishes the outbox row to Redpanda. The relay is at-least-once to the bus - a crash after produce but before marking published re-publishes on restart, which the consumer side absorbs. The outbox row carries `org_id`, `topic`, `partition_key` (the `org_id` string), `idempotency_key`, `schema_subject` (`{topic}-value`), and the payload. A unique index `(topic, idempotency_key)` means a double-confirm cannot enqueue a second event.
 
 ### Inbox + dedupe cache (consume side)
 
 Every consumer is idempotent against the envelope `idempotency_key`, in two layers:
 
-1. **Redis dedupe cache** — a fast `SET NX EX` reject of obvious replays, keyed:
+1. **Redis dedupe cache** - a fast `SET NX EX` reject of obvious replays, keyed:
 
    ```
    nexus:{org_id}:dedupe:{topic}:{idempotency_key}    TTL 24h
    ```
 
-2. **Durable inbox table** — primary key `(consumer_group, org_id, idempotency_key)`, the authority when the cache has evicted.
+2. **Durable inbox table** - primary key `(consumer_group, org_id, idempotency_key)`, the authority when the cache has evicted.
 
 The inbox insert and the business effect commit in the **same transaction**, so a crash after the effect cannot double-apply. Each consumer group applies a given fact exactly once, independently of the others.
 
@@ -266,7 +266,7 @@ Every event value opens with the shared `EventEnvelopeHeader` (namespace `io.nex
 | `correlation_id` | `["null","string"]` (default null) | Ties a causal chain across topics. |
 | `causation_id` | `["null","string"]` (default null) | `event_id` of the direct cause; null for root events. |
 
-`org_id` is **mandatory on every event** — it is the tenant partition key and the isolation anchor; no event may omit it. `event_id` is distinct from `idempotency_key`: the former is unique per physical emission, the latter is stable across retries of the same logical fact.
+`org_id` is **mandatory on every event** - it is the tenant partition key and the isolation anchor; no event may omit it. `event_id` is distinct from `idempotency_key`: the former is unique per physical emission, the latter is stable across retries of the same logical fact.
 
 ---
 
@@ -276,20 +276,20 @@ Compatibility is **BACKWARD**, enforced in CI against the registered subject.
 
 - **Additive only.** Add a field with a default; remove a field that had a default; widen via a `null` union with a default; append enum symbols at the tail with a default.
 - **Forbidden.** Add a required field without a default; remove a non-defaulted field; rename a field; narrow a type. Header field order is frozen by convention.
-- **Renames go through the Glossary + an ADR first.** A rename is a remove + add, which BACKWARD forbids. It must be recorded as an explicit `old → new` entry in the Glossary (`24-glossary-and-naming.md`) and superseded via an ADR before any schema change — never silently.
-- **CI compatibility gate.** `check-compatibility` runs against the registered subject before any producer image is built. Incompatible PRs fail before merge — at SaaS scale ~20 services upgrade independently and a single non-defaulted required field would break every lagging consumer on a partition.
+- **Renames go through the Glossary + an ADR first.** A rename is a remove + add, which BACKWARD forbids. It must be recorded as an explicit `old → new` entry in the Glossary (`24-glossary-and-naming.md`) and superseded via an ADR before any schema change - never silently.
+- **CI compatibility gate.** `check-compatibility` runs against the registered subject before any producer image is built. Incompatible PRs fail before merge - at SaaS scale ~20 services upgrade independently and a single non-defaulted required field would break every lagging consumer on a partition.
 
 ---
 
 ## Agent-to-agent contract
 
-`agent-requests` and `agent-responses` carry the agent-to-agent (A2A) collaboration used by the `ContextGapAgent`. The request/response payloads carry `requester_agent_id`, `responder_target`, `correlation_id`, and `deadline`; correlation is by `correlation_id`, not by partition. Both topics are partitioned by `org_id`, so a request and its response stay within one tenant. **Deny-by-default authorization is enforced by the consuming agents** — org/role-scoped and audited (per ADR-0013); a peer agent answers only requests it is authorized to serve. Past the `deadline`, a request has no value and is not served. `agent-requests` uses idempotency key `areq:{correlation_id}`.
+`agent-requests` and `agent-responses` carry the agent-to-agent (A2A) collaboration used by the `ContextGapAgent`. The request/response payloads carry `requester_agent_id`, `responder_target`, `correlation_id`, and `deadline`; correlation is by `correlation_id`, not by partition. Both topics are partitioned by `org_id`, so a request and its response stay within one tenant. **Deny-by-default authorization is enforced by the consuming agents** - org/role-scoped and audited (per ADR-0013); a peer agent answers only requests it is authorized to serve. Past the `deadline`, a request has no value and is not served. `agent-requests` uses idempotency key `areq:{correlation_id}`.
 
 ---
 
 ## Confirmation-only edges
 
-`decisions` and `actions` are produced **only on user confirmation by `core-api`** — never speculatively by an agent. The contract:
+`decisions` and `actions` are produced **only on user confirmation by `core-api`** - never speculatively by an agent. The contract:
 
 1. The agent surfaces a candidate via `agent-results`.
 2. The user confirms in the sidebar.
@@ -305,10 +305,10 @@ This is the structural enforcement of the "no silent commits" rule, and it is du
 
 The repo generates typed clients from the Avro schemas:
 
-- **Python** — pydantic models / dataclasses for producers and consumers (used by `reprise-backend` and `reprise-intelligence`).
-- **TypeScript** — types for `reprise-realtime` and any TS consumer.
+- **Python** - pydantic models / dataclasses for producers and consumers (used by `reprise-backend` and `reprise-intelligence`).
+- **TypeScript** - types for `reprise-realtime` and any TS consumer.
 
-`reprise-backend`, `reprise-intelligence`, and `reprise-realtime` depend on the published generated packages rather than hand-rolling serializers — so a schema change here propagates as a versioned package bump there. The sanctioned producer (outbox relay, Avro-serializing against `{topic}-value`) and the base consumer (Avro-deserializing, manual offset commit after effect, dedupe gate, DLQ routing) consume these generated types.
+`reprise-backend`, `reprise-intelligence`, and `reprise-realtime` depend on the published generated packages rather than hand-rolling serializers - so a schema change here propagates as a versioned package bump there. The sanctioned producer (outbox relay, Avro-serializing against `{topic}-value`) and the base consumer (Avro-deserializing, manual offset commit after effect, dedupe gate, DLQ routing) consume these generated types.
 
 ---
 
@@ -316,17 +316,17 @@ The repo generates typed clients from the Avro schemas:
 
 `org_id` is the partition key on **every** topic and the mandatory header field on **every** event. Consequences:
 
-- **Per-tenant ordering and replay** — one tenant's events on one topic land on one partition, consumed in offset order; reprocessing a tenant means replaying its partition slice.
-- **Noisy-neighbor isolation** — a bursting tenant saturates only its own partition's lag, observable per tenant, without head-of-line-blocking another tenant.
-- **No cross-tenant topic mixing** — there is no shared, tenant-agnostic topic; the bus-level isolation mirrors RLS, per-tenant Qdrant collections, and the org-partitioned `nexus_knowledge` graph.
+- **Per-tenant ordering and replay** - one tenant's events on one topic land on one partition, consumed in offset order; reprocessing a tenant means replaying its partition slice.
+- **Noisy-neighbor isolation** - a bursting tenant saturates only its own partition's lag, observable per tenant, without head-of-line-blocking another tenant.
+- **No cross-tenant topic mixing** - there is no shared, tenant-agnostic topic; the bus-level isolation mirrors RLS, per-tenant Qdrant collections, and the org-partitioned `nexus_knowledge` graph.
 
 ---
 
 ## Testing
 
-- **Schema compatibility tests** — every schema version is checked BACKWARD against the registered subject; the CI gate is the same check.
-- **Contract tests** — verify producer/consumer assignments, subject naming (`{topic}-value`), envelope presence, and `org_id` mandatory-ness for every topic.
-- **Golden sample events** — checked-in canonical sample events per topic, serialized and round-tripped through the generated clients, so codegen changes are caught against fixtures.
+- **Schema compatibility tests** - every schema version is checked BACKWARD against the registered subject; the CI gate is the same check.
+- **Contract tests** - verify producer/consumer assignments, subject naming (`{topic}-value`), envelope presence, and `org_id` mandatory-ness for every topic.
+- **Golden sample events** - checked-in canonical sample events per topic, serialized and round-tripped through the generated clients, so codegen changes are caught against fixtures.
 
 ---
 
@@ -343,17 +343,17 @@ The repo generates typed clients from the Avro schemas:
 
 GitHub Actions pipeline on every PR:
 
-1. **Validate Avro** — parse and lint every `.avsc`.
-2. **Schema Registry compatibility checks** — run `check-compatibility` against the registered subject under **BACKWARD**; block breaking changes before merge.
-3. **Generate & publish client packages** — build Python (pydantic/dataclasses) and TypeScript packages; publish on merge to trunk.
-4. **Block breaking changes** — an incompatible subject change fails the build and cannot merge.
+1. **Validate Avro** - parse and lint every `.avsc`.
+2. **Schema Registry compatibility checks** - run `check-compatibility` against the registered subject under **BACKWARD**; block breaking changes before merge.
+3. **Generate & publish client packages** - build Python (pydantic/dataclasses) and TypeScript packages; publish on merge to trunk.
+4. **Block breaking changes** - an incompatible subject change fails the build and cannot merge.
 
 ---
 
 ## Reference
 
-- `_canon/03-event-taxonomy.md` — frozen event-naming authority (topics, schemas, partition keys, retention, delivery).
-- `07-event-architecture.md` — the full delivery machinery (outbox/inbox, dedupe, DLQ, backpressure).
-- `03-container-architecture.md` §4.2 — the canonical + control-plane topic set on the async backbone.
-- `_canon/01-service-catalog.md` — producer/consumer assignments (single source of truth for service names).
-- `24-glossary-and-naming.md` — the published naming authority and any recorded `old → new` rename.
+- `_canon/03-event-taxonomy.md` - frozen event-naming authority (topics, schemas, partition keys, retention, delivery).
+- `07-event-architecture.md` - the full delivery machinery (outbox/inbox, dedupe, DLQ, backpressure).
+- `03-container-architecture.md` §4.2 - the canonical + control-plane topic set on the async backbone.
+- `_canon/01-service-catalog.md` - producer/consumer assignments (single source of truth for service names).
+- `24-glossary-and-naming.md` - the published naming authority and any recorded `old → new` rename.
