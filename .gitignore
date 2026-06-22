@@ -1,0 +1,65 @@
+# ---- Environment / secrets ----
+.env
+.env.*
+*.local
+.envrc
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.eggs/
+*.egg-info/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+dist/
+build/
+
+# ---- Node / TypeScript ----
+node_modules/
+.npm/
+.yarn/
+.pnp.*
+*.tsbuildinfo
+coverage/
+.eslintcache
+
+# ---- Codegen artifacts (generated clients, never committed) ----
+generated/
+codegen/out/
+codegen/.cache/
+**/__generated__/
+*.gen.py
+*.gen.ts
+
+# ---- Avro / Schema Registry local caches ----
+.schema-cache/
+*.avsc.compiled
+
+# ---- Build / package outputs ----
+out/
+target/
+*.tgz
+*.whl
+
+# ---- Editors / OS ----
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ---- Logs / temp ----
+*.log
+logs/
+tmp/
+.cache/
