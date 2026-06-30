@@ -1,14 +1,14 @@
-# Reprise AI - Event Contracts: System Design (`reprise-events`)
+# Mytheus - Event Contracts: System Design (`mytheus-events`)
 
-Deep reference for the event contracts that bind every Reprise AI service together. This repo is the single source of event truth, downstream of the frozen `_canon/03-event-taxonomy.md` and `07-event-architecture.md`. Every topic name, partition key, and Avro field name is reproduced here verbatim from the canon.
+Deep reference for the event contracts that bind every Mytheus service together. This repo is the single source of event truth, downstream of the frozen `_canon/03-event-taxonomy.md` and `07-event-architecture.md`. Every topic name, partition key, and Avro field name is reproduced here verbatim from the canon.
 
 ---
 
 ## Purpose
 
-`reprise-events` is the **single source of event truth** for Reprise AI (internal codename NEXUS). It holds the Avro schemas, the Schema Registry subject definitions, the topic taxonomy, the partition-key conventions, and the outbox/inbox/DLQ delivery contract. It is the engineering realization of the frozen naming authority `_canon/03-event-taxonomy.md` (the topic catalog) and `07-event-architecture.md` (the delivery machinery). Those documents are authoritative; this repo implements them and must never contradict them. Any change to a frozen value lands in the canon first.
+`mytheus-events` is the **single source of event truth** for Mytheus (internal codename NEXUS). It holds the Avro schemas, the Schema Registry subject definitions, the topic taxonomy, the partition-key conventions, and the outbox/inbox/DLQ delivery contract. It is the engineering realization of the frozen naming authority `_canon/03-event-taxonomy.md` (the topic catalog) and `07-event-architecture.md` (the delivery machinery). Those documents are authoritative; this repo implements them and must never contradict them. Any change to a frozen value lands in the canon first.
 
-The repo is also the **producer of generated client types**: `reprise-backend`, `reprise-intelligence`, and `reprise-realtime` consume the generated Python and TypeScript packages rather than hand-rolling serializers.
+The repo is also the **producer of generated client types**: `mytheus-backend`, `mytheus-intelligence`, and `mytheus-realtime` consume the generated Python and TypeScript packages rather than hand-rolling serializers.
 
 ---
 
@@ -305,10 +305,10 @@ This is the structural enforcement of the "no silent commits" rule, and it is du
 
 The repo generates typed clients from the Avro schemas:
 
-- **Python** - pydantic models / dataclasses for producers and consumers (used by `reprise-backend` and `reprise-intelligence`).
-- **TypeScript** - types for `reprise-realtime` and any TS consumer.
+- **Python** - pydantic models / dataclasses for producers and consumers (used by `mytheus-backend` and `mytheus-intelligence`).
+- **TypeScript** - types for `mytheus-realtime` and any TS consumer.
 
-`reprise-backend`, `reprise-intelligence`, and `reprise-realtime` depend on the published generated packages rather than hand-rolling serializers - so a schema change here propagates as a versioned package bump there. The sanctioned producer (outbox relay, Avro-serializing against `{topic}-value`) and the base consumer (Avro-deserializing, manual offset commit after effect, dedupe gate, DLQ routing) consume these generated types.
+`mytheus-backend`, `mytheus-intelligence`, and `mytheus-realtime` depend on the published generated packages rather than hand-rolling serializers - so a schema change here propagates as a versioned package bump there. The sanctioned producer (outbox relay, Avro-serializing against `{topic}-value`) and the base consumer (Avro-deserializing, manual offset commit after effect, dedupe gate, DLQ routing) consume these generated types.
 
 ---
 

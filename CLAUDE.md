@@ -1,10 +1,10 @@
 # CLAUDE.md
 
-This is `reprise-events`, the frozen event vocabulary for Reprise AI: the Avro schemas, Schema Registry subjects, topic taxonomy, and outbox/inbox/DLQ delivery contract that every service produces and consumes against. The single most important thing: BACKWARD compatibility is mandatory (never break a subject), and every event carries `org_id` plus `idempotency_key` in its envelope. This repo realizes the canon; it never invents naming.
+This is `mytheus-events`, the frozen event vocabulary for Mytheus: the Avro schemas, Schema Registry subjects, topic taxonomy, and outbox/inbox/DLQ delivery contract that every service produces and consumes against. The single most important thing: BACKWARD compatibility is mandatory (never break a subject), and every event carries `org_id` plus `idempotency_key` in its envelope. This repo realizes the canon; it never invents naming.
 
 ## Repo at a glance
 
-`reprise-events` is the shared event contract consumed by `reprise-backend`, `reprise-intelligence`, and `reprise-realtime`. They depend on the generated Python and TypeScript client packages produced here rather than hand-rolling serializers, so a schema change here propagates as a versioned package bump there.
+`mytheus-events` is the shared event contract consumed by `mytheus-backend`, `mytheus-intelligence`, and `mytheus-realtime`. They depend on the generated Python and TypeScript client packages produced here rather than hand-rolling serializers, so a schema change here propagates as a versioned package bump there.
 
 This repo is downstream of `_canon/03-event-taxonomy.md` (the frozen naming authority: topics, schemas, partition keys, retention) and `07-event-architecture.md` (the delivery machinery: outbox/inbox, dedupe, DLQ, backpressure). Those documents are authoritative. This repo implements them and must never contradict them. Any change to a frozen value lands in the canon first.
 
@@ -206,7 +206,7 @@ Run `make validate` and `make check-compatibility` before opening a PR. CI runs 
 
 ## Working with other repos
 
-`reprise-backend`, `reprise-intelligence`, and `reprise-realtime` depend on the generated client packages published from this repo rather than hand-rolling serializers, so a schema change here propagates as a versioned package bump there. Every producer must publish through the transactional outbox, and every consumer must dedupe via the inbox plus Redis cache and route poison messages to `<topic>.dlq`. The sanctioned producer (outbox relay, Avro-serializing against `{topic}-value`) and the base consumer (Avro-deserializing, manual offset commit after the effect, dedupe gate, DLQ routing) consume these generated types.
+`mytheus-backend`, `mytheus-intelligence`, and `mytheus-realtime` depend on the generated client packages published from this repo rather than hand-rolling serializers, so a schema change here propagates as a versioned package bump there. Every producer must publish through the transactional outbox, and every consumer must dedupe via the inbox plus Redis cache and route poison messages to `<topic>.dlq`. The sanctioned producer (outbox relay, Avro-serializing against `{topic}-value`) and the base consumer (Avro-deserializing, manual offset commit after the effect, dedupe gate, DLQ routing) consume these generated types.
 
 ## Commit and PR conventions
 

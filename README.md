@@ -1,16 +1,16 @@
-# Reprise AI - Event Contracts (`reprise-events`)
+# Mytheus - Event Contracts (`mytheus-events`)
 
-The single home for every Reprise AI event contract: the Avro schemas, Schema Registry subjects, topic taxonomy, partition-key conventions, and the outbox/inbox/DLQ delivery contract that every service produces and consumes against.
+The single home for every Mytheus event contract: the Avro schemas, Schema Registry subjects, topic taxonomy, partition-key conventions, and the outbox/inbox/DLQ delivery contract that every service produces and consumes against.
 
 ## What this is
 
-`reprise-events` is the **event contracts & schema registry** repo for Reprise AI (internal codename NEXUS). It owns:
+`mytheus-events` is the **event contracts & schema registry** repo for Mytheus (internal codename NEXUS). It owns:
 
 - **Avro schemas** - the value schema for every Redpanda topic, opening with the shared `EventEnvelopeHeader` and a topic-specific payload.
 - **Schema Registry subjects** - one subject per topic, named `{topic}-value`, registered under **BACKWARD** compatibility.
 - **The topic taxonomy** - the canonical list of every topic, its producer, its consumers, its partition key, its retention, and its delivery/idempotency rule.
 - **The delivery contract** - the transactional outbox on produce, the inbox + Redis dedupe on consume, and the per-topic DLQ that every service honors.
-- **Generated client types** - the source of generated Python and TypeScript producer/consumer types that `reprise-backend`, `reprise-intelligence`, and `reprise-realtime` depend on.
+- **Generated client types** - the source of generated Python and TypeScript producer/consumer types that `mytheus-backend`, `mytheus-intelligence`, and `mytheus-realtime` depend on.
 
 It is the **shared event vocabulary for all services** - the engineering realization of the frozen `_canon/03-event-taxonomy.md`. No service may invent a topic, rename a field, or break a subject; the contract lives here.
 
@@ -68,7 +68,7 @@ Every topic is partitioned by `org_id` (the tenant UUID string). Delivery is **a
 ## Repo structure
 
 ```
-reprise-events/
+mytheus-events/
 ├── schemas/            # Avro schemas, versioned: schemas/<topic>/vN.avsc
 │   └── <topic>/
 │       └── v1.avsc
@@ -122,15 +122,15 @@ To **add a field safely**: append it to the payload record with a default (or a 
 
 ## Related repos
 
-- `reprise-backend` - CRUD / control-plane services (core-api, identity-tenant, meeting, billing-metering, integration, admin-ops, notification).
-- `reprise-intelligence` - AI / inference tier (agent-runtime, embedding, reranker, rag, ingestion, knowledge-graph, search).
-- `reprise-realtime` - realtime-gateway and transcription-service (WebSocket + live transcription).
-- `reprise-events` - **this repo**: event contracts, Avro schemas, Schema Registry subjects, delivery contract.
-- `reprise-platform` - infrastructure, Terraform/Kubernetes, Redpanda cluster, CI/CD.
-- `reprise-ui` - Next.js 14 web application (meeting room, agent sidebar).
-- `reprise-mobile` - mobile client.
-- `reprise-docs` - architecture documentation and ADRs.
+- `mytheus-backend` - CRUD / control-plane services (core-api, identity-tenant, meeting, billing-metering, integration, admin-ops, notification).
+- `mytheus-intelligence` - AI / inference tier (agent-runtime, embedding, reranker, rag, ingestion, knowledge-graph, search).
+- `mytheus-realtime` - realtime-gateway and transcription-service (WebSocket + live transcription).
+- `mytheus-events` - **this repo**: event contracts, Avro schemas, Schema Registry subjects, delivery contract.
+- `mytheus-platform` - infrastructure, Terraform/Kubernetes, Redpanda cluster, CI/CD.
+- `mytheus-ui` - Next.js 14 web application (meeting room, agent sidebar).
+- `mytheus-mobile` - mobile client.
+- `mytheus-docs` - architecture documentation and ADRs.
 
 ## License
 
-Proprietary © Reprise AI. All rights reserved.
+Proprietary © Mytheus. All rights reserved.
