@@ -1,0 +1,20 @@
+# pre-commit hooks for mytheus-events. Install once: `uv run pre-commit install`.
+# The `validate` hook enforces the .avsc structural invariants on every commit (fast, offline).
+repos:
+  - repo: local
+    hooks:
+      - id: ruff
+        name: ruff
+        entry: uv run ruff check
+        language: system
+        types: [python]
+      - id: avro-validate
+        name: avro-validate (parse + lint every .avsc, enforce invariants)
+        entry: make validate
+        language: system
+        pass_filenames: false
+        files: '\.avsc$|codegen/.*\.py$'
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks

@@ -1,0 +1,13 @@
+{
+  "type": "record",
+  "name": "GraphEvent",
+  "namespace": "io.nexus.events",
+  "doc": "graph-events value. Subject: graph-events-value. Compat: BACKWARD. Net-new (not frozen canon). Producer knowledge-graph-service; edge-created/lineage-updated.",
+  "fields": [
+    { "name": "header",     "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "event_type", "type": { "type": "enum", "name": "GraphEventType", "symbols": ["edge_created", "lineage_updated"] } },
+    { "name": "edge_label", "type": "string" },
+    { "name": "from_id",    "type": "string" },
+    { "name": "to_id",      "type": "string" }
+  ]
+}

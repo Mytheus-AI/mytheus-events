@@ -1,0 +1,12 @@
+{
+  "type": "record",
+  "name": "MeetingEvent",
+  "namespace": "io.nexus.events",
+  "doc": "meeting-events value. Subject: meeting-events-value. Compat: BACKWARD. Net-new (not frozen canon). Producer core-api; meeting created/updated/ended.",
+  "fields": [
+    { "name": "header",       "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "meeting_id",   "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "event_type",   "type": { "type": "enum", "name": "MeetingEventType", "symbols": ["created", "updated", "ended"] } },
+    { "name": "livekit_room", "type": "string" }
+  ]
+}

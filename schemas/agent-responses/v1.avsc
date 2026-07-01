@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "AgentResponse",
+  "namespace": "io.nexus.events",
+  "doc": "agent-responses value. Subject: agent-responses-value. Compat: BACKWARD. Agent-to-agent context-fill responses; correlated by correlation_id, not partition.",
+  "fields": [
+    { "name": "header",             "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "correlation_id",     "type": "string" },
+    { "name": "responder_agent_id", "type": "string" },
+    { "name": "result",             "type": "string" },
+    { "name": "success",            "type": "boolean" },
+    { "name": "latency_ms",         "type": "int" }
+  ]
+}

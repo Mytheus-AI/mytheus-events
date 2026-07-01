@@ -1,0 +1,5 @@
+{
+  "subject": "meeting-events-value",
+  "schema": "schemas/meeting-events/v1.avsc",
+  "compatibility": "BACKWARD"
+}

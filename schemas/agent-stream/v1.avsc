@@ -1,0 +1,15 @@
+{
+  "type": "record",
+  "name": "AgentStreamDelta",
+  "namespace": "io.nexus.events",
+  "doc": "agent-stream value. Subject: agent-stream-value. Compat: BACKWARD. Net-new (not frozen canon). Streamed LLM token deltas to the UI; throwaway, shed first under backpressure.",
+  "fields": [
+    { "name": "header",     "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "meeting_id", "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "user_id",    "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "window_id",  "type": "string" },
+    { "name": "seq",        "type": "int" },
+    { "name": "delta",      "type": "string" },
+    { "name": "done",       "type": "boolean" }
+  ]
+}

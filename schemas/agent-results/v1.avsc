@@ -1,0 +1,21 @@
+{
+  "type": "record",
+  "name": "AgentResult",
+  "namespace": "io.nexus.events",
+  "doc": "agent-results value. Subject: agent-results-value. Compat: BACKWARD. Agent output (notes, scores, suggestions); bus is transient transport, read models persist in core-api.",
+  "fields": [
+    { "name": "header",          "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "meeting_id",      "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "window_id",       "type": "string" },
+    { "name": "user_id",         "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "agent",           "type": { "type": "enum", "name": "AgentClass",
+              "symbols": ["PersonalListenerAgent", "DecisionAgent", "ActionAgent", "QuestionAgent", "ContextGapAgent", "ProactiveAgent"] } },
+    { "name": "kind",            "type": { "type": "enum", "name": "AgentResultKind",
+              "symbols": ["note", "decision_candidate", "action_candidate", "suggestion", "alert"] } },
+    { "name": "relevance_score", "type": "float" },
+    { "name": "confidence",      "type": "float" },
+    { "name": "content",         "type": "string" },
+    { "name": "payload_json",    "type": "string", "doc": "Free-form per kind." },
+    { "name": "source_chunk_ids","type": { "type": "array", "items": { "type": "string", "logicalType": "uuid" } } }
+  ]
+}

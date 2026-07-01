@@ -1,0 +1,13 @@
+{
+  "type": "record",
+  "name": "MeetingRoomEvent",
+  "namespace": "io.nexus.events",
+  "doc": "meeting-room-events value. Subject: meeting-room-events-value. Compat: BACKWARD. Net-new (not frozen canon). Producer meeting-service; LiveKit joined/left/recording-ready, drives transcription start.",
+  "fields": [
+    { "name": "header",         "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "meeting_id",     "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "room",           "type": "string" },
+    { "name": "event_type",     "type": { "type": "enum", "name": "MeetingRoomEventType", "symbols": ["joined", "left", "recording_ready"] } },
+    { "name": "participant_id", "type": ["null", "string"], "default": null }
+  ]
+}

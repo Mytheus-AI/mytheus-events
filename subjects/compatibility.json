@@ -1,0 +1,26 @@
+{
+  "default": "BACKWARD",
+  "subjects": {
+    "transcript-chunks-value": "BACKWARD",
+    "document-chunks-value": "BACKWARD",
+    "agent-results-value": "BACKWARD",
+    "decisions-value": "BACKWARD",
+    "actions-value": "BACKWARD",
+    "notifications-value": "BACKWARD",
+    "agent-requests-value": "BACKWARD",
+    "agent-responses-value": "BACKWARD",
+    "agent-stream-value": "BACKWARD",
+    "tenant-events-value": "BACKWARD",
+    "meeting-events-value": "BACKWARD",
+    "meeting-room-events-value": "BACKWARD",
+    "integration-events-value": "BACKWARD",
+    "usage-events-value": "BACKWARD",
+    "billing-events-value": "BACKWARD",
+    "graph-events-value": "BACKWARD",
+    "embedding-events-value": "BACKWARD",
+    "presence-events-value": "BACKWARD",
+    "notification-delivery-events-value": "BACKWARD",
+    "user-sync-events-value": "BACKWARD",
+    "admin-events-value": "BACKWARD"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "record",
+  "name": "UsageEvent",
+  "namespace": "io.nexus.events",
+  "doc": "usage-events value. Subject: usage-events-value. Compat: BACKWARD. Net-new (not frozen canon). Producers agent-runtime-service and rag-service ONLY. Carries source_id so the key usage:{org_id}:{event_type}:{occurred_at}:{source_id} is constructible.",
+  "fields": [
+    { "name": "header",     "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "user_id",    "type": ["null", "string"], "default": null },
+    { "name": "event_type", "type": { "type": "enum", "name": "UsageEventType", "symbols": ["meeting_minute", "agent_token", "transcription_second", "storage_gb"] } },
+    { "name": "quantity",   "type": "double" },
+    { "name": "source_id",  "type": "string" }
+  ]
+}

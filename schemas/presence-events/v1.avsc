@@ -1,0 +1,12 @@
+{
+  "type": "record",
+  "name": "PresenceEvent",
+  "namespace": "io.nexus.events",
+  "doc": "presence-events value. Subject: presence-events-value. Compat: BACKWARD. Net-new (not frozen canon). Producer realtime-gateway; Socket.io presence join/leave.",
+  "fields": [
+    { "name": "header",     "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "meeting_id", "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "user_id",    "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "event_type", "type": { "type": "enum", "name": "PresenceEventType", "symbols": ["join", "leave"] } }
+  ]
+}

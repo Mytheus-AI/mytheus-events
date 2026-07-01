@@ -1,0 +1,19 @@
+{
+  "header": {
+    "event_id": "00000000-0000-4000-8000-0000000000aa",
+    "idempotency_key": "notif:source_event_id:channel:user_id",
+    "org_id": "00000000-0000-4000-8000-000000000001",
+    "schema_version": 1,
+    "producer": "sample-service",
+    "occurred_at": 1700000000000000,
+    "correlation_id": null,
+    "causation_id": null
+  },
+  "source_event_id": "source_event_id",
+  "channel": "in_app",
+  "user_id": "00000000-0000-4000-8000-0000000000aa",
+  "priority": 1,
+  "title": "title",
+  "body": "body",
+  "link": "link"
+}

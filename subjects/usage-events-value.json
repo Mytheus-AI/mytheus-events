@@ -1,0 +1,5 @@
+{
+  "subject": "usage-events-value",
+  "schema": "schemas/usage-events/v1.avsc",
+  "compatibility": "BACKWARD"
+}

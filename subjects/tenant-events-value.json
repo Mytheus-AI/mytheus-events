@@ -1,0 +1,5 @@
+{
+  "subject": "tenant-events-value",
+  "schema": "schemas/tenant-events/v1.avsc",
+  "compatibility": "BACKWARD"
+}

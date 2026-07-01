@@ -1,0 +1,5 @@
+{
+  "subject": "billing-events-value",
+  "schema": "schemas/billing-events/v1.avsc",
+  "compatibility": "BACKWARD"
+}

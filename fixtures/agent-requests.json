@@ -1,0 +1,17 @@
+{
+  "header": {
+    "event_id": "00000000-0000-4000-8000-0000000000aa",
+    "idempotency_key": "areq:correlation_id",
+    "org_id": "00000000-0000-4000-8000-000000000001",
+    "schema_version": 1,
+    "producer": "sample-service",
+    "occurred_at": 1700000000000000,
+    "correlation_id": null,
+    "causation_id": null
+  },
+  "requester_agent_id": "requester_agent_id",
+  "responder_target": "responder_target",
+  "query": "query",
+  "deadline": 1700000000000000,
+  "correlation_id": "correlation_id"
+}

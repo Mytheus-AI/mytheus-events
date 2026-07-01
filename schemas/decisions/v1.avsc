@@ -1,0 +1,16 @@
+{
+  "type": "record",
+  "name": "Decision",
+  "namespace": "io.nexus.events",
+  "doc": "decisions value. Subject: decisions-value. Compat: BACKWARD. Confirmed decisions ONLY; producer core-api on confirm. status enum is intentionally {confirmed} so a non-confirmed value is unrepresentable (no-silent-commits).",
+  "fields": [
+    { "name": "header",       "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "decision_id",  "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "meeting_id",   "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "content",      "type": "string" },
+    { "name": "rationale",    "type": "string" },
+    { "name": "confidence",   "type": "float" },
+    { "name": "status",       "type": { "type": "enum", "name": "DecisionStatus", "symbols": ["confirmed"] } },
+    { "name": "confirmed_by", "type": { "type": "string", "logicalType": "uuid" } }
+  ]
+}

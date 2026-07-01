@@ -1,0 +1,13 @@
+{
+  "type": "record",
+  "name": "IntegrationEvent",
+  "namespace": "io.nexus.events",
+  "doc": "integration-events value. Subject: integration-events-value. Compat: BACKWARD. Net-new (not frozen canon). Producer integration-service. provider enum {google_calendar, slack, jira, linear} encodes the R8 guardrail (Calendar + Slack + one PM tool).",
+  "fields": [
+    { "name": "header",       "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "provider",     "type": { "type": "enum", "name": "IntegrationProvider", "symbols": ["google_calendar", "slack", "jira", "linear"] } },
+    { "name": "event_type",   "type": "string" },
+    { "name": "external_id",  "type": "string" },
+    { "name": "payload_json", "type": "string" }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "type": "record",
+  "name": "BillingEvent",
+  "namespace": "io.nexus.events",
+  "doc": "billing-events value. Subject: billing-events-value. Compat: BACKWARD. Net-new (not frozen canon). Producer billing-metering-service; quota-exceeded/dunning/plan-changed.",
+  "fields": [
+    { "name": "header",          "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "event_type",      "type": { "type": "enum", "name": "BillingEventType", "symbols": ["quota_exceeded", "dunning", "plan_changed"] } },
+    { "name": "subscription_id", "type": ["null", "string"], "default": null },
+    { "name": "detail_json",     "type": "string" }
+  ]
+}

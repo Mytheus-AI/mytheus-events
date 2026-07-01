@@ -1,0 +1,5 @@
+{
+  "subject": "admin-events-value",
+  "schema": "schemas/admin-events/v1.avsc",
+  "compatibility": "BACKWARD"
+}

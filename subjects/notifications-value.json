@@ -1,0 +1,5 @@
+{
+  "subject": "notifications-value",
+  "schema": "schemas/notifications/v1.avsc",
+  "compatibility": "BACKWARD"
+}

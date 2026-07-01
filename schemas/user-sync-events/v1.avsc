@@ -1,0 +1,13 @@
+{
+  "type": "record",
+  "name": "UserSyncEvent",
+  "namespace": "io.nexus.events",
+  "doc": "user-sync-events value. Subject: user-sync-events-value. Compat: BACKWARD. Net-new (not frozen canon). Producer identity-tenant-service (Clerk inbox). NOTE: Clerk event types user.created/user.updated/user.deleted are normalized to underscore symbols because Avro enum symbols cannot contain dots; the Clerk raw type maps 1:1.",
+  "fields": [
+    { "name": "header",        "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "clerk_event_id","type": "string" },
+    { "name": "clerk_user_id", "type": "string" },
+    { "name": "event_type",    "type": { "type": "enum", "name": "UserSyncEventType", "symbols": ["user_created", "user_updated", "user_deleted"] } },
+    { "name": "email",         "type": ["null", "string"], "default": null }
+  ]
+}

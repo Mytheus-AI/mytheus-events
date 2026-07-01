@@ -1,0 +1,15 @@
+{
+  "header": {
+    "event_id": "00000000-0000-4000-8000-0000000000aa",
+    "idempotency_key": "presence-events:sample",
+    "org_id": "00000000-0000-4000-8000-000000000001",
+    "schema_version": 1,
+    "producer": "sample-service",
+    "occurred_at": 1700000000000000,
+    "correlation_id": null,
+    "causation_id": null
+  },
+  "meeting_id": "00000000-0000-4000-8000-0000000000aa",
+  "user_id": "00000000-0000-4000-8000-0000000000aa",
+  "event_type": "join"
+}

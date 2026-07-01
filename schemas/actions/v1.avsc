@@ -1,0 +1,16 @@
+{
+  "type": "record",
+  "name": "Action",
+  "namespace": "io.nexus.events",
+  "doc": "actions value. Subject: actions-value. Compat: BACKWARD. Confirmed action items ONLY; producer core-api on confirm. status enum {confirmed} enforces no-silent-commits.",
+  "fields": [
+    { "name": "header",      "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "action_id",   "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "meeting_id",  "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "content",     "type": "string" },
+    { "name": "assignee_id", "type": ["null", "string"], "default": null },
+    { "name": "due_date",    "type": ["null", { "type": "int", "logicalType": "date" }], "default": null },
+    { "name": "confidence",  "type": "float" },
+    { "name": "status",      "type": { "type": "enum", "name": "ActionStatus", "symbols": ["confirmed"] } }
+  ]
+}

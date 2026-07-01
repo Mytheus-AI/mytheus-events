@@ -1,0 +1,20 @@
+{
+  "type": "record",
+  "name": "DlqEnvelope",
+  "namespace": "io.nexus.events",
+  "doc": "Dead-letter wrapper for poison messages. Verbatim from 07-event-architecture.md 7. One paired <topic>.dlq (14-day retention) exists per topic.",
+  "fields": [
+    { "name": "original_topic",     "type": "string" },
+    { "name": "original_partition", "type": "int" },
+    { "name": "original_offset",    "type": "long" },
+    { "name": "org_id",             "type": "string" },
+    { "name": "idempotency_key",    "type": "string" },
+    { "name": "consumer_group",     "type": "string" },
+    { "name": "failure_class",      "type": { "type": "enum", "name": "FailureClass",
+              "symbols": ["DESERIALIZE", "SCHEMA_INCOMPAT", "BUSINESS_INVALID", "MAX_RETRIES"] } },
+    { "name": "error",              "type": "string" },
+    { "name": "attempts",           "type": "int" },
+    { "name": "first_seen_at",      "type": { "type": "long", "logicalType": "timestamp-micros" } },
+    { "name": "raw_value_b64",      "type": "string" }
+  ]
+}

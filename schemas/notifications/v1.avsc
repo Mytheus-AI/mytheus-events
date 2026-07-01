@@ -1,0 +1,16 @@
+{
+  "type": "record",
+  "name": "Notification",
+  "namespace": "io.nexus.events",
+  "doc": "notifications value. Subject: notifications-value. Compat: BACKWARD. Cross-channel notification intents.",
+  "fields": [
+    { "name": "header",          "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "source_event_id", "type": "string" },
+    { "name": "channel",         "type": { "type": "enum", "name": "NotificationChannel", "symbols": ["in_app", "email", "slack"] } },
+    { "name": "user_id",         "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "priority",        "type": "int" },
+    { "name": "title",           "type": "string" },
+    { "name": "body",            "type": "string" },
+    { "name": "link",            "type": ["null", "string"], "default": null }
+  ]
+}

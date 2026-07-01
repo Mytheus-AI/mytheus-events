@@ -1,0 +1,13 @@
+{
+  "type": "record",
+  "name": "NotificationDeliveryEvent",
+  "namespace": "io.nexus.events",
+  "doc": "notification-delivery-events value. Subject: notification-delivery-events-value. Compat: BACKWARD. Net-new (not frozen canon). Producer notification-service; delivery receipts.",
+  "fields": [
+    { "name": "header",          "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "notification_id", "type": "string" },
+    { "name": "channel",         "type": "string" },
+    { "name": "status",          "type": { "type": "enum", "name": "NotificationDeliveryStatus", "symbols": ["sent", "failed", "bounced"] } },
+    { "name": "detail",          "type": ["null", "string"], "default": null }
+  ]
+}

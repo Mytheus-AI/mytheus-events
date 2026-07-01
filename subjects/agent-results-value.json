@@ -1,0 +1,5 @@
+{
+  "subject": "agent-results-value",
+  "schema": "schemas/agent-results/v1.avsc",
+  "compatibility": "BACKWARD"
+}

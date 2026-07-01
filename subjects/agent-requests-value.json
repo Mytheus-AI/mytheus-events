@@ -1,0 +1,5 @@
+{
+  "subject": "agent-requests-value",
+  "schema": "schemas/agent-requests/v1.avsc",
+  "compatibility": "BACKWARD"
+}

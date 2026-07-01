@@ -1,0 +1,5 @@
+{
+  "subject": "embedding-events-value",
+  "schema": "schemas/embedding-events/v1.avsc",
+  "compatibility": "BACKWARD"
+}

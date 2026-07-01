@@ -1,0 +1,5 @@
+{
+  "subject": "transcript-chunks-value",
+  "schema": "schemas/transcript-chunks/v1.avsc",
+  "compatibility": "BACKWARD"
+}

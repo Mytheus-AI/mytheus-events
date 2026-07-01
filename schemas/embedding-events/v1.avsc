@@ -1,0 +1,12 @@
+{
+  "type": "record",
+  "name": "EmbeddingEvent",
+  "namespace": "io.nexus.events",
+  "doc": "embedding-events value. Subject: embedding-events-value. Compat: BACKWARD. Net-new (not frozen canon). Producer embedding-service; upsert acks for lag tracking.",
+  "fields": [
+    { "name": "header",      "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "collection",  "type": "string" },
+    { "name": "point_count", "type": "int" },
+    { "name": "meeting_id",  "type": ["null", "string"], "default": null }
+  ]
+}

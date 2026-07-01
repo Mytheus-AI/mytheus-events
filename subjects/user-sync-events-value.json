@@ -1,0 +1,5 @@
+{
+  "subject": "user-sync-events-value",
+  "schema": "schemas/user-sync-events/v1.avsc",
+  "compatibility": "BACKWARD"
+}

@@ -1,0 +1,17 @@
+{
+  "type": "record",
+  "name": "TranscriptChunk",
+  "namespace": "io.nexus.events",
+  "doc": "transcript-chunks value. Subject: transcript-chunks-value. Compat: BACKWARD. Finalized diarized utterances (finals only).",
+  "fields": [
+    { "name": "header",      "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "meeting_id",  "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "chunk_id",    "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "speaker_id",  "type": "string" },
+    { "name": "start_ms",    "type": "int" },
+    { "name": "end_ms",      "type": "int" },
+    { "name": "text",        "type": "string" },
+    { "name": "is_final",    "type": "boolean" },
+    { "name": "confidence",  "type": "float" }
+  ]
+}

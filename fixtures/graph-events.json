@@ -1,0 +1,16 @@
+{
+  "header": {
+    "event_id": "00000000-0000-4000-8000-0000000000aa",
+    "idempotency_key": "graph-events:sample",
+    "org_id": "00000000-0000-4000-8000-000000000001",
+    "schema_version": 1,
+    "producer": "sample-service",
+    "occurred_at": 1700000000000000,
+    "correlation_id": null,
+    "causation_id": null
+  },
+  "event_type": "edge_created",
+  "edge_label": "edge_label",
+  "from_id": "from_id",
+  "to_id": "to_id"
+}

@@ -1,0 +1,5 @@
+{
+  "subject": "agent-responses-value",
+  "schema": "schemas/agent-responses/v1.avsc",
+  "compatibility": "BACKWARD"
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@mytheus/events",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "codegen": "node codegen/ts_from_avsc.mjs",
+    "build": "tsc -p clients/typescript/tsconfig.json",
+    "typecheck": "tsc -p clients/typescript/tsconfig.json --noEmit",
+    "test": "node --test \"tests/ts/*.test.mjs\""
+  },
+  "devDependencies": {
+    "typescript": "^5.5",
+    "avsc": "^5.7"
+  }
+}

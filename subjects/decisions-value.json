@@ -1,0 +1,5 @@
+{
+  "subject": "decisions-value",
+  "schema": "schemas/decisions/v1.avsc",
+  "compatibility": "BACKWARD"
+}

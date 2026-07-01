@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "AdminEvent",
+  "namespace": "io.nexus.events",
+  "doc": "admin-events value. Subject: admin-events-value. Compat: BACKWARD. Net-new (not frozen canon). Producer admin-ops-service; flag-changed/tenant-suspended/erasure-requested. Topic is log-compacted; mirrored to audit_logs.",
+  "fields": [
+    { "name": "header",      "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "event_type",  "type": { "type": "enum", "name": "AdminEventType", "symbols": ["flag_changed", "tenant_suspended", "erasure_requested"] } },
+    { "name": "actor_id",    "type": "string" },
+    { "name": "target_type", "type": "string" },
+    { "name": "target_id",   "type": "string" },
+    { "name": "detail_json", "type": "string" }
+  ]
+}

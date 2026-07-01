@@ -1,0 +1,19 @@
+{
+  "header": {
+    "event_id": "00000000-0000-4000-8000-0000000000aa",
+    "idempotency_key": "decision:decision_id:confirmed",
+    "org_id": "00000000-0000-4000-8000-000000000001",
+    "schema_version": 1,
+    "producer": "sample-service",
+    "occurred_at": 1700000000000000,
+    "correlation_id": null,
+    "causation_id": null
+  },
+  "decision_id": "00000000-0000-4000-8000-0000000000aa",
+  "meeting_id": "00000000-0000-4000-8000-0000000000aa",
+  "content": "content",
+  "rationale": "rationale",
+  "confidence": 0.9,
+  "status": "confirmed",
+  "confirmed_by": "00000000-0000-4000-8000-0000000000aa"
+}

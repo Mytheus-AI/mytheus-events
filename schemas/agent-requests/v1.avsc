@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "AgentRequest",
+  "namespace": "io.nexus.events",
+  "doc": "agent-requests value. Subject: agent-requests-value. Compat: BACKWARD. Agent-to-agent context-fill requests (ContextGapAgent). Field names verbatim from canon A2A contract; deny-by-default authz is enforced by the consuming agent. Key areq:{correlation_id}.",
+  "fields": [
+    { "name": "header",             "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "requester_agent_id", "type": "string" },
+    { "name": "responder_target",   "type": "string" },
+    { "name": "query",              "type": "string" },
+    { "name": "deadline",           "type": { "type": "long", "logicalType": "timestamp-micros" } },
+    { "name": "correlation_id",     "type": "string" }
+  ]
+}

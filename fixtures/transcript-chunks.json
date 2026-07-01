@@ -1,0 +1,20 @@
+{
+  "header": {
+    "event_id": "00000000-0000-4000-8000-0000000000aa",
+    "idempotency_key": "chunk:chunk_id",
+    "org_id": "00000000-0000-4000-8000-000000000001",
+    "schema_version": 1,
+    "producer": "sample-service",
+    "occurred_at": 1700000000000000,
+    "correlation_id": null,
+    "causation_id": null
+  },
+  "meeting_id": "00000000-0000-4000-8000-0000000000aa",
+  "chunk_id": "00000000-0000-4000-8000-0000000000aa",
+  "speaker_id": "speaker_id",
+  "start_ms": 1,
+  "end_ms": 1,
+  "text": "text",
+  "is_final": true,
+  "confidence": 0.9
+}

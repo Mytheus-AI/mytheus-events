@@ -1,0 +1,5 @@
+{
+  "subject": "actions-value",
+  "schema": "schemas/actions/v1.avsc",
+  "compatibility": "BACKWARD"
+}

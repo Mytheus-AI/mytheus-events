@@ -1,0 +1,5 @@
+{
+  "subject": "presence-events-value",
+  "schema": "schemas/presence-events/v1.avsc",
+  "compatibility": "BACKWARD"
+}

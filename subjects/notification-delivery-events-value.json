@@ -1,0 +1,5 @@
+{
+  "subject": "notification-delivery-events-value",
+  "schema": "schemas/notification-delivery-events/v1.avsc",
+  "compatibility": "BACKWARD"
+}

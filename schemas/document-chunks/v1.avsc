@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "DocumentChunk",
+  "namespace": "io.nexus.events",
+  "doc": "document-chunks value. Subject: document-chunks-value. Compat: BACKWARD. Net-new (not frozen canon). Typed, split document elements from ingestion; no mandatory meeting_id. Key docchunk:{document_id}:{element_id}.",
+  "fields": [
+    { "name": "header",       "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "document_id",  "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "element_id",   "type": "string" },
+    { "name": "element_type", "type": { "type": "enum", "name": "DocumentElementType", "symbols": ["Title", "NarrativeText", "Table", "ListItem"] } },
+    { "name": "text",         "type": "string" },
+    { "name": "position",     "type": "int" }
+  ]
+}

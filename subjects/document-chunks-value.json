@@ -1,0 +1,5 @@
+{
+  "subject": "document-chunks-value",
+  "schema": "schemas/document-chunks/v1.avsc",
+  "compatibility": "BACKWARD"
+}

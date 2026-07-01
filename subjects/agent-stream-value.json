@@ -1,0 +1,5 @@
+{
+  "subject": "agent-stream-value",
+  "schema": "schemas/agent-stream/v1.avsc",
+  "compatibility": "BACKWARD"
+}
