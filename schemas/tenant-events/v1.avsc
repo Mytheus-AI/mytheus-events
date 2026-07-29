@@ -5,7 +5,7 @@
   "doc": "tenant-events value. Subject: tenant-events-value. Compat: BACKWARD. Net-new (not frozen canon). Sole producer identity-tenant-service; topic is log-compacted.",
   "fields": [
     { "name": "header",     "type": "io.nexus.events.EventEnvelopeHeader" },
-    { "name": "event_type", "type": { "type": "enum", "name": "TenantEventType", "symbols": ["provisioned", "suspended", "deleted"] } },
+    { "name": "event_type", "type": { "type": "enum", "name": "TenantEventType", "symbols": ["provisioned", "suspended", "deleted"], "default": "suspended" } },
     { "name": "org_slug",   "type": "string" },
     { "name": "plan_code",  "type": "string" }
   ]

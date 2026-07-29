@@ -7,5 +7,5 @@ export interface MeetingEvent {
   header: EventEnvelopeHeader;
   meeting_id: string;
   event_type: "created" | "updated" | "ended";
-  livekit_room: string;
+  livekit_room?: string | null;
 }
