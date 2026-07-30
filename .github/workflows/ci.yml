@@ -1,0 +1,70 @@
+name: ci
+
+# mytheus-events' copy of the canonical template in mytheus-platform/.github/workflows/ci.yml.
+# Plan 1-2 section 3.11.
+#
+# `make ci` and `make check-compatibility` have been fully defined in this repo since Plan 0
+# with nothing invoking them. The compatibility gate is the one that matters: BACKWARD is
+# mandatory here, and a single non-defaulted required field breaks every lagging consumer on
+# the partition. That is not something to discover at deploy time.
+
+on:
+  pull_request: {}
+  push:
+    branches: [main]
+
+jobs:
+  schemas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: make ci
+
+  compatibility:
+    # The BACKWARD gate. Needs a live Schema Registry, which is why it is its own job.
+    runs-on: ubuntu-latest
+    services:
+      redpanda:
+        image: docker.redpanda.com/redpandadata/redpanda:v24.1.1
+        ports:
+          - 8081:8081
+          - 9092:9092
+        options: >-
+          --health-cmd "rpk cluster health | grep -E 'Healthy:.+true'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      SCHEMA_REGISTRY_URL: http://localhost:8081
+      REDPANDA_BROKERS: localhost:9092
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - run: make validate
+      # Register the schemas as they exist on the BASE branch first, then check this PR's
+      # versions against them. Without the base-branch step there is no prior version in a
+      # fresh registry, so check-compatibility passes trivially and proves nothing. That is
+      # the exact trap the 64f4c2d commit message called out, made structural here.
+      - name: register the base-branch schemas
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin "${{ github.base_ref }}" --depth=1
+          git checkout "origin/${{ github.base_ref }}" -- schemas subjects
+          make register
+          git checkout HEAD -- schemas subjects
+      - name: BACKWARD gate for this PR's schemas
+        run: make check-compatibility
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
