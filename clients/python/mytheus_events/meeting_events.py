@@ -11,4 +11,4 @@ class MeetingEvent(BaseModel):
     header: EventEnvelopeHeader
     meeting_id: str
     event_type: Literal['created', 'updated', 'ended']
-    livekit_room: str
+    livekit_room: Optional[str] = None
