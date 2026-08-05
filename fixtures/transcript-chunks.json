@@ -16,5 +16,6 @@
   "end_ms": 1,
   "text": "text",
   "is_final": true,
-  "confidence": 0.9
+  "confidence": 0.9,
+  "redacted": true
 }

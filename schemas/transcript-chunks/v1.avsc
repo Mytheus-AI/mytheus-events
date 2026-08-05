@@ -12,6 +12,7 @@
     { "name": "end_ms",      "type": "int" },
     { "name": "text",        "type": "string" },
     { "name": "is_final",    "type": "boolean" },
-    { "name": "confidence",  "type": "float" }
+    { "name": "confidence",  "type": "float" },
+    { "name": "redacted",    "type": "boolean", "default": false }
   ]
 }

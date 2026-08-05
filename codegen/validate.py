@@ -1,11 +1,17 @@
 """Parse + lint every .avsc and enforce the structural invariants of the event contract.
 
 Asserts:
-  - EventEnvelopeHeader field order matches the frozen 8-field list; org_id non-nullable.
+  - EventEnvelopeHeader field order matches the frozen 8-field list; org_id non-nullable on
+    every topic (org_id is the sole partition key on 19 topics, and the leading component of
+    the composite {org_id}:{meeting_id} key on transcript-chunks/agent-stream — ADR-0017 in
+    mytheus-docs. This check does not distinguish the two cases: org_id must be present and
+    non-nullable regardless of which partition-key shape a topic uses).
   - exactly 21 topic schema folders, matching the canonical topic set.
   - every topic value's first field is `header` typed io.nexus.events.EventEnvelopeHeader.
   - every .avsc parses (this rejects invalid Avro, e.g. dotted enum symbols).
   - Decision/Action status enum symbols == ['confirmed'] (no-silent-commits, structural).
+  - the two composite-partition-key topics (transcript-chunks, agent-stream) carry a
+    non-nullable meeting_id field, since that is the second half of their partition key.
 
 Non-zero exit on any failure. Usage: python codegen/validate.py [schemas_dir_ignored]
 """
@@ -15,7 +21,7 @@ import os
 import sys
 
 from _schemas import (
-    ENVELOPE_PATH, HEADER_FIELDS, SCHEMAS_DIR, TOPICS,
+    COMPOSITE_PARTITION_KEY_TOPICS, ENVELOPE_PATH, HEADER_FIELDS, SCHEMAS_DIR, TOPICS,
     load_raw, load_topic, topic_schema_path,
 )
 
@@ -30,7 +36,11 @@ def main() -> int:
         errors.append(f"EventEnvelopeHeader field order {names} != frozen {HEADER_FIELDS}")
     org = next((f for f in env["fields"] if f["name"] == "org_id"), None)
     if org is None or isinstance(org["type"], list):
-        errors.append("header.org_id must be present and non-nullable (it is the partition key)")
+        errors.append(
+            "header.org_id must be present and non-nullable (it is the tenant key on every "
+            "topic: the sole partition key on 19 topics, and the leading component of the "
+            "composite {org_id}:{meeting_id} key on transcript-chunks/agent-stream, ADR-0017)"
+        )
 
     # 2. Exactly 21 topic folders matching the canonical set.
     topic_dirs = sorted(
@@ -68,6 +78,18 @@ def main() -> int:
         syms = st["type"].get("symbols") if st and isinstance(st["type"], dict) else None
         if syms != ["confirmed"]:
             errors.append(f"{t}: status enum symbols {syms} != ['confirmed']")
+
+    # 5. Composite-partition-key topics (transcript-chunks, agent-stream; ADR-0017) must carry
+    #    a non-nullable meeting_id field: it is the second half of their {org_id}:{meeting_id}
+    #    partition key, so a topic that loses it silently breaks per-meeting partitioning.
+    for t in sorted(COMPOSITE_PARTITION_KEY_TOPICS):
+        raw = load_raw(topic_schema_path(t))
+        mid = next((f for f in raw["fields"] if f["name"] == "meeting_id"), None)
+        if mid is None or isinstance(mid["type"], list):
+            errors.append(
+                f"{t}: meeting_id must be present and non-nullable (it is the second half of "
+                f"this topic's composite {{org_id}}:{{meeting_id}} partition key, ADR-0017)"
+            )
 
     if errors:
         print("VALIDATE FAILED:")

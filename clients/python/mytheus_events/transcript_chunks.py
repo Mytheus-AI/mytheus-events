@@ -17,3 +17,4 @@ class TranscriptChunk(BaseModel):
     text: str
     is_final: bool
     confidence: float
+    redacted: bool = False
