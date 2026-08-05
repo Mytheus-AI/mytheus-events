@@ -63,3 +63,6 @@ Thumbs.db
 logs/
 tmp/
 .cache/
+
+# Local git worktrees (scratch; never committed)
+.worktrees/
