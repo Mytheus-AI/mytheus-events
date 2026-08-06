@@ -12,8 +12,13 @@ dependencies = [
   "pydantic>=2",
 ]
 
+# ruff is pinned exactly (not ">=") because a bare floor lets any fresh `uv lock` pick up a
+# newer ruff whose default rule set has changed (e.g. 0.16.1 broke import-sort here with no
+# code change of our own) - that turns a routine lock refresh into a confusing lint failure
+# that looks like the developer's fault. Bump this pin deliberately, together with fixing
+# whatever the new ruff version now flags, not as a side effect of an unrelated relock.
 [dependency-groups]
-dev = ["pytest>=8", "ruff>=0.4", "fastavro>=1.9", "httpx>=0.27"]
+dev = ["pytest>=8", "ruff==0.15.20", "fastavro>=1.9", "httpx>=0.27"]
 
 # The one artifact this repo ships for consumption elsewhere: the generated pydantic client at
 # clients/python/mytheus_events (see codegen/py_from_avsc.py). hatchling is the build backend
