@@ -6,7 +6,7 @@
   "fields": [
     { "name": "event_id",        "type": { "type": "string", "logicalType": "uuid" }, "doc": "Unique per emitted event; distinct from idempotency_key." },
     { "name": "idempotency_key",  "type": "string", "doc": "Business dedupe key; stable across producer retries of the same fact." },
-    { "name": "org_id",           "type": { "type": "string", "logicalType": "uuid" }, "doc": "Tenant root. Also the Kafka partition key. RLS/cell scoping anchor. Mandatory on every event." },
+    { "name": "org_id",           "type": { "type": "string", "logicalType": "uuid" }, "doc": "Tenant root. RLS/cell scoping anchor. Mandatory on every event. The Kafka partition key on 19 of 21 topics; the first half of the composite {org_id}:{meeting_id} key on transcript-chunks/agent-stream (ADR-0017)." },
     { "name": "schema_version",   "type": "int", "default": 1, "doc": "Producer's payload schema version (observability; Registry enforces compat independently)." },
     { "name": "producer",         "type": "string", "doc": "Owning service name (kebab-case, from the Service Catalog)." },
     { "name": "occurred_at",      "type": { "type": "long", "logicalType": "timestamp-micros" }, "doc": "When the fact happened (UTC); not enqueue time." },

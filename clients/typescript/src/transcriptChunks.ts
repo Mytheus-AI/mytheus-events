@@ -13,4 +13,5 @@ export interface TranscriptChunk {
   text: string;
   is_final: boolean;
   confidence: number;
+  redacted: boolean;
 }

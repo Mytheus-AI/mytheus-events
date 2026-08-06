@@ -25,7 +25,9 @@ HEADER_FIELDS = [
     "producer", "occurred_at", "correlation_id", "causation_id",
 ]
 
-# The 21 canonical topics (partition key org_id on every one), in canon order.
+# The 21 canonical topics, in canon order. Partition key is org_id alone on 19 of them;
+# transcript-chunks and agent-stream use the composite {org_id}:{meeting_id} key instead
+# (COMPOSITE_PARTITION_KEY_TOPICS below; ADR-0017 in mytheus-docs, _canon/03-event-taxonomy.md).
 TOPICS = [
     "transcript-chunks", "document-chunks", "agent-results", "decisions", "actions",
     "notifications", "agent-requests", "agent-responses", "agent-stream",
@@ -33,6 +35,12 @@ TOPICS = [
     "usage-events", "billing-events", "graph-events", "embedding-events",
     "presence-events", "notification-delivery-events", "user-sync-events", "admin-events",
 ]
+
+# Topics partitioned by the composite {org_id}:{meeting_id} key rather than org_id alone
+# (ADR-0017). org_id remains mandatory and non-nullable on these too — it is still the
+# tenant key and the leading component of the composite key, just not the whole key.
+# Every other topic in TOPICS keeps the org_id-only partition key.
+COMPOSITE_PARTITION_KEY_TOPICS = {"transcript-chunks", "agent-stream"}
 
 # The seven Avro schema names frozen by canon (_canon/06-tech-decisions.md 4). All others net-new.
 FROZEN_SCHEMAS = {

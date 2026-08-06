@@ -32,7 +32,7 @@ The envelope. Every event value opens with the shared `EventEnvelopeHeader` (nam
 |---|---|---|
 | `event_id` | `string` (uuid) | Unique per physical emission; distinct from `idempotency_key`. |
 | `idempotency_key` | `string` | Business dedupe key; stable across producer retries of the same fact. |
-| `org_id` | `string` (uuid) | Tenant root; the Kafka partition key; isolation anchor. Mandatory on every event. |
+| `org_id` | `string` (uuid) | Tenant root; isolation anchor; the Kafka partition key on 19 of 21 topics, and the leading component of the `{org_id}:{meeting_id}` composite key on `transcript-chunks`/`agent-stream` (per ADR-0017 in `mytheus-docs`). Mandatory and non-nullable on every event regardless. |
 | `schema_version` | `int` (default 1) | Producer's payload schema version (observability; Registry enforces compat independently). |
 | `producer` | `string` | Owning service name (kebab-case, from the Service Catalog). |
 | `occurred_at` | `long` (timestamp-micros) | When the fact happened (UTC); not enqueue time. |
@@ -41,13 +41,13 @@ The envelope. Every event value opens with the shared `EventEnvelopeHeader` (nam
 
 ## Topic catalog
 
-All 21 topics. Partition key is `org_id` on every topic. The value subject is always `{topic}-value`. A paired `<topic>.dlq` (14-day retention) exists for every topic. Producer/consumer assignments are reconciled to `_canon/01-service-catalog.md`.
+All 21 topics. Partition key is `org_id` on 19 of the 21 topics; `transcript-chunks` and `agent-stream` use the composite key `{org_id}:{meeting_id}` (per ADR-0017 in `mytheus-docs`) — see their rows in the Topic catalog below. The value subject is always `{topic}-value`. A paired `<topic>.dlq` (14-day retention) exists for every topic. Producer/consumer assignments are reconciled to `_canon/01-service-catalog.md`.
 
 Data-plane topics:
 
 | Topic | Producer | Consumers | Partition key |
 |---|---|---|---|
-| `transcript-chunks` | `transcription-service` | `embedding-service`, `agent-runtime-service`, `search-service` | `org_id` |
+| `transcript-chunks` | `transcription-service` | `embedding-service`, `agent-runtime-service`, `search-service` | `{org_id}:{meeting_id}` |
 | `document-chunks` | `ingestion-service` | `embedding-service`, `agent-runtime-service` | `org_id` |
 | `agent-results` | `agent-runtime-service` | `core-api`, `realtime-gateway`, `notification-service` | `org_id` |
 | `decisions` | `core-api` (outbox, on confirm) | `knowledge-graph-service`, `notification-service` | `org_id` |
@@ -55,7 +55,7 @@ Data-plane topics:
 | `notifications` | multiple | `notification-service`, `realtime-gateway` | `org_id` |
 | `agent-requests` | `agent-runtime-service` | `agent-runtime-service` (peer agents) | `org_id` |
 | `agent-responses` | `agent-runtime-service` | `agent-runtime-service` (requester) | `org_id` |
-| `agent-stream` | `agent-runtime-service` (LiteLLM stream bridge) | `realtime-gateway` (to WebSocket) | `org_id` |
+| `agent-stream` | `agent-runtime-service` (LiteLLM stream bridge) | `realtime-gateway` (to WebSocket) | `{org_id}:{meeting_id}` |
 
 Control-plane and observability topics:
 
@@ -98,7 +98,7 @@ docs/        # taxonomy, conventions, evolution guides
 
 | Rule | Why | If you break it |
 |---|---|---|
-| Every event carries `org_id` and `idempotency_key` in the `EventEnvelopeHeader` | `org_id` is the partition key and tenant isolation anchor; `idempotency_key` is the dedupe key stable across retries | Events land on the wrong partition or cannot be deduped; tenant isolation and exactly-once-in-effect both fail |
+| Every event carries `org_id` and `idempotency_key` in the `EventEnvelopeHeader` | `org_id` is mandatory and non-nullable on every topic (the sole partition key on 19; the leading component of the composite key on `transcript-chunks`/`agent-stream`, ADR-0017), and the tenant isolation anchor; `idempotency_key` is the dedupe key stable across retries | Events land on the wrong partition or cannot be deduped; tenant isolation and exactly-once-in-effect both fail |
 | BACKWARD compatibility is mandatory; never break a subject | At SaaS scale ~20 services upgrade independently; a lagging consumer must still read newer data | A single non-defaulted required field breaks every lagging consumer on the partition |
 | One subject per topic, named `{topic}-value` | The subject naming is frozen; there are no key schemas, the key is the raw `org_id` string | Producers and consumers resolve the wrong subject; codegen and Registry diverge |
 | Renames go via the Glossary plus an ADR first, never silently | A rename is a remove plus add, which BACKWARD forbids | The compatibility gate fails, or worse, a silent rename ships and consumers lose the field |
@@ -106,7 +106,7 @@ docs/        # taxonomy, conventions, evolution guides
 
 ## Naming authority
 
-This repo implements `_canon/03-event-taxonomy.md`. Topic names, partition keys, and Avro field names are frozen there. Never invent a topic, never add a second subject for a topic, never rename a field, and never use a non-`org_id` partition key. Keep every identifier verbatim:
+This repo implements `_canon/03-event-taxonomy.md`. Topic names, partition keys, and Avro field names are frozen there. Never invent a topic, never add a second subject for a topic, never rename a field, and never use a partition key that disagrees with the canon's per-topic table — `org_id` alone for 19 topics, the composite `{org_id}:{meeting_id}` for `transcript-chunks`/`agent-stream` only (ADR-0017). Keep every identifier verbatim:
 
 - The 21 topic names listed in the Topic catalog above.
 - The Redis dedupe pattern: `nexus:{org_id}:dedupe:{topic}:{idempotency_key}`.
