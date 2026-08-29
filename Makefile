@@ -39,8 +39,16 @@ test-ts:
 typecheck:               ## tsc type-check the generated TypeScript client
 	npx tsc -p clients/typescript/tsconfig.json --noEmit
 
-create-topics:           ## create the 21 topics + 21 .dlq locally (needs rpk + a broker)
+create-topics:           ## create the 21 topics + 21 .dlq (idempotent; needs rpk + a broker)
 	bash scripts/create_topics.sh
+
+# One command for "make this cluster ready to carry events", because the two halves are
+# useless apart: topics without subjects means every produce fails serialization, and subjects
+# without topics means auto-created 1-partition topics with default retention. Both halves are
+# idempotent, so this is safe to re-run and is what a deploy path should call.
+# mytheus-platform/deploy/deploy.sh does not call it (that would need this repo on the deploy
+# box); it VERIFIES the result and fails the deploy if the backbone is missing.
+provision: create-topics register   ## topics + subjects, idempotent; BROKERS= and SR_URL=
 
 # Infra-free everyday gate (no Schema Registry required).
 ci: validate codegen test
