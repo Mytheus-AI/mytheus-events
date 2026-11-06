@@ -1,4 +1,4 @@
-.PHONY: install lint validate check-compatibility register codegen codegen-py codegen-ts \
+.PHONY: install lint validate check-compatibility register check-registered build-python-client codegen codegen-py codegen-ts \
         test test-py test-ts typecheck create-topics ci ci-compat verify-all
 SR_URL ?= http://localhost:8081
 
@@ -14,6 +14,9 @@ validate:                ## parse + lint every .avsc, enforce structural invaria
 
 register:                ## register {topic}-value subjects under BACKWARD (needs SR_URL up)
 	uv run python codegen/register.py --registry $(SR_URL) --subjects subjects
+
+check-registered:        ## read-only: fail if ANY local schema differs from registry latest (needs SR_URL up)
+	uv run python codegen/register.py --check --registry $(SR_URL)
 
 check-compatibility:     ## BACKWARD gate against registered subjects (needs SR_URL up)
 	uv run python codegen/check_compat.py --registry $(SR_URL) --subjects subjects
@@ -39,7 +42,12 @@ test-ts:
 typecheck:               ## tsc type-check the generated TypeScript client
 	npx tsc -p clients/typescript/tsconfig.json --noEmit
 
-create-topics:           ## create the 21 topics + 21 .dlq (idempotent; needs rpk + a broker)
+# Wheel for mytheus-intelligence & co: dist/mytheus_events-<ver>-py3-none-any.whl (see README
+# "Python client wheel"). Needs hatchling (fetched by uv's build isolation).
+build-python-client:     ## build the mytheus_events pydantic client wheel into dist/
+	uv build --wheel --out-dir dist
+
+create-topics:           ## create the 21 topics + 21 .dlq = 42 (schemas/ also has _envelope, not a topic; idempotent; needs rpk + a broker)
 	bash scripts/create_topics.sh
 
 # One command for "make this cluster ready to carry events", because the two halves are
