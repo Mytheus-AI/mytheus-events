@@ -4,11 +4,20 @@ Pins each subject's compatibility to BACKWARD (PUT /config/{subject}), then regi
 (envelope-inlined) schema (POST /subjects/{subject}/versions). Registration is idempotent:
 re-posting an identical schema returns the existing id and does not create a new version.
 
-    python codegen/register.py --registry http://localhost:8081 --subjects subjects
+    python codegen/register.py --registry http://localhost:8085 --subjects subjects
+
+``--check`` is read-only (no PUT/POST): it compares every local topic schema (envelope
+inlined, exactly what ``register`` would POST) with the registry's LATEST version of
+``{topic}-value`` and exits 1 on ANY difference (missing subject, differing schema, including
+doc/default/ordering-of-fields changes), unlike check_compat.py which only tests BACKWARD
+compatibility. Catches "schema edited locally but never registered" drift.
+
+    python codegen/register.py --check --registry http://localhost:8085
 """
 from __future__ import annotations
 
 import argparse
+import difflib
 import json
 import sys
 
@@ -17,11 +26,100 @@ import httpx
 from _schemas import TOPICS, inlined_schema
 
 
-def main() -> int:
+def _pretty(obj) -> list[str]:
+    return json.dumps(obj, indent=2, sort_keys=False).splitlines()
+
+
+_PRIMS = {"null", "boolean", "int", "long", "float", "double", "bytes", "string"}
+
+
+def _canon(node, ns=""):
+    """Canonicalise like the Schema Registry: split dotted names into name+namespace, drop a
+    namespace equal to the enclosing one, and shorten named-type references accordingly. Lets
+    ``--check`` compare local sources (fullname in ``name``) with the registry's stored form."""
+    if isinstance(node, str):
+        if node in _PRIMS or "." not in node:
+            return node
+        n_ns, _, short = node.rpartition(".")
+        return short if n_ns == ns else node
+    if isinstance(node, list):
+        return [_canon(x, ns) for x in node]
+    if isinstance(node, dict):
+        out = dict(node)
+        t = node.get("type")
+        if t in ("record", "enum", "fixed") and "name" in node:
+            name = node["name"]
+            if "." in name:
+                n_ns, _, short = name.rpartition(".")
+            else:
+                n_ns, short = node.get("namespace", ns), name
+            out.pop("namespace", None)
+            out["name"] = short
+            if n_ns and n_ns != ns:
+                out["namespace"] = n_ns
+            ns = n_ns
+        for k in ("type", "items", "values"):
+            if k in out and not (k == "type" and t in ("record", "enum", "fixed")):
+                out[k] = _canon(out[k], ns)
+        if "fields" in out:
+            out["fields"] = [dict(f, type=_canon(f["type"], ns)) for f in out["fields"]]
+        return out
+    return node
+
+
+def check_registered(client, topics=TOPICS) -> list[str]:
+    """Compare local schemas to the registry's latest versions. Returns problem strings.
+
+    Comparison is structural JSON equality of the parsed schema documents (object key order is
+    irrelevant; field order, defaults, docs and types all count).
+    """
+    problems: list[str] = []
+    for t in topics:
+        subject = f"{t}-value"
+        resp = client.get(f"/subjects/{subject}/versions/latest")
+        if resp.status_code == 404:
+            problems.append(f"{subject}: NOT REGISTERED (local schema schemas/{t}/v1.avsc)")
+            continue
+        resp.raise_for_status()
+        body = resp.json()
+        remote = _canon(json.loads(body["schema"]))
+        local = _canon(json.loads(json.dumps(inlined_schema(t))))
+        if remote == local:
+            print(f"in sync    {subject} (registry v{body.get('version')})")
+            continue
+        diff = "\n".join(
+            difflib.unified_diff(
+                _pretty(remote), _pretty(local),
+                fromfile=f"registry:{subject}@v{body.get('version')}",
+                tofile=f"local:schemas/{t}/v1.avsc",
+                lineterm="", n=2,
+            )
+        )
+        problems.append(f"{subject}: DIFFERS from registry latest\n{diff}")
+    return problems
+
+
+def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--registry", default="http://localhost:8081")
+    ap.add_argument("--registry", default="http://localhost:8085")
     ap.add_argument("--subjects", default="subjects")  # accepted for CLI symmetry; not read
-    args = ap.parse_args()
+    ap.add_argument("--check", action="store_true",
+                    help="read-only: fail if any local schema differs from the registry latest")
+    args = ap.parse_args(argv)
+
+    if args.check:
+        with httpx.Client(base_url=args.registry, timeout=15.0) as client:
+            problems = check_registered(client)
+        if problems:
+            print(f"\ncheck-registered FAILED: {len(problems)} of {len(TOPICS)} subjects "
+                  "differ from the registry:\n", file=sys.stderr)
+            for p in problems:
+                print(p + "\n", file=sys.stderr)
+            print("Fix: run `make register` (additive/BACKWARD changes) or revert the local "
+                  "schema.", file=sys.stderr)
+            return 1
+        print(f"check-registered OK: all {len(TOPICS)} local schemas match the registry")
+        return 0
 
     with httpx.Client(base_url=args.registry, timeout=15.0) as client:
         # registry-wide default

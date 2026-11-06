@@ -98,6 +98,38 @@ make register            # publishes {topic}-value to the Schema Registry
 make codegen             # Python (pydantic/dataclasses) + TypeScript types
 ```
 
+### Counts: 21 topics, 22 directory entries
+
+`schemas/` holds 22 entries: the 21 topic folders plus `_envelope/` (the shared
+`EventEnvelopeHeader`, not a topic). `subjects/` holds 22 files: 21 `{topic}-value.json` plus
+`compatibility.json`. `make create-topics` creates 21 topics + 21 `.dlq` = 42.
+`tests/test_topics_consistency.py` pins all of this, including that `scripts/create_topics.sh`
+matches `schemas/` and the partition counts (07-event-architecture.md 4.2; canon 03 has
+retention only) and retention (canon 03) in `mytheus-docs`.
+
+### Registry drift check (`make check-registered`)
+
+Read-only; fails if ANY local schema differs from the registry's latest `{topic}-value`
+version (not just incompatibly). It is NOT wired into CI. To add it, put this step in the
+`avro-compat` job, after the `register` step and with the Schema Registry service up:
+
+```yaml
+      - name: Verify registry matches repo
+        run: make check-registered SR_URL=http://localhost:8085
+```
+
+### Python client wheel
+
+`make build-python-client` writes `dist/mytheus_events-<version>-py3-none-any.whl` (pydantic
+models only; sole dependency `pydantic>=2`). `mytheus-intelligence`'s
+`libs/shared/clients.py::load_events_client()` simply does `import mytheus_events` and raises
+with an install hint otherwise, so installing the wheel into its environment is all it needs:
+
+```bash
+make -C ../mytheus-events build-python-client
+uv pip install ../mytheus-events/dist/mytheus_events-0.1.0-py3-none-any.whl   # or pip install
+```
+
 To **add a topic**, you must first land it in `_canon/03-event-taxonomy.md` - topic names and partition keys are frozen there. This repo only realizes the canon; it never invents a topic.
 
 ## Versioning & evolution
