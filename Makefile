@@ -1,6 +1,6 @@
 .PHONY: install lint validate check-compatibility register check-registered build-python-client codegen codegen-py codegen-ts \
         test test-py test-ts typecheck create-topics ci ci-compat verify-all
-SR_URL ?= http://localhost:8081
+SR_URL ?= http://localhost:8085
 
 install:                 ## install python (uv) + node deps
 	uv sync

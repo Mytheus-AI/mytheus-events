@@ -4,7 +4,7 @@ Pins each subject's compatibility to BACKWARD (PUT /config/{subject}), then regi
 (envelope-inlined) schema (POST /subjects/{subject}/versions). Registration is idempotent:
 re-posting an identical schema returns the existing id and does not create a new version.
 
-    python codegen/register.py --registry http://localhost:8081 --subjects subjects
+    python codegen/register.py --registry http://localhost:8085 --subjects subjects
 
 ``--check`` is read-only (no PUT/POST): it compares every local topic schema (envelope
 inlined, exactly what ``register`` would POST) with the registry's LATEST version of
@@ -12,7 +12,7 @@ inlined, exactly what ``register`` would POST) with the registry's LATEST versio
 doc/default/ordering-of-fields changes), unlike check_compat.py which only tests BACKWARD
 compatibility. Catches "schema edited locally but never registered" drift.
 
-    python codegen/register.py --check --registry http://localhost:8081
+    python codegen/register.py --check --registry http://localhost:8085
 """
 from __future__ import annotations
 
@@ -64,7 +64,7 @@ def check_registered(client, topics=TOPICS) -> list[str]:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--registry", default="http://localhost:8081")
+    ap.add_argument("--registry", default="http://localhost:8085")
     ap.add_argument("--subjects", default="subjects")  # accepted for CLI symmetry; not read
     ap.add_argument("--check", action="store_true",
                     help="read-only: fail if any local schema differs from the registry latest")

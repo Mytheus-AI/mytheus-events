@@ -115,7 +115,7 @@ version (not just incompatibly). It is NOT wired into CI. To add it, put this st
 
 ```yaml
       - name: Verify registry matches repo
-        run: make check-registered SR_URL=http://localhost:8081
+        run: make check-registered SR_URL=http://localhost:8085
 ```
 
 ### Python client wheel

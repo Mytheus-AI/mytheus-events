@@ -5,7 +5,7 @@ For every {topic}-value subject, POST the (envelope-inlined) local schema to
 A subject with no registered version yet (404 / error 40401) is treated as compatible
 (first registration). Non-zero exit on any incompatibility.
 
-    python codegen/check_compat.py --registry http://localhost:8081 --subjects subjects
+    python codegen/check_compat.py --registry http://localhost:8085 --subjects subjects
 """
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ from _schemas import TOPICS, inlined_schema
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--registry", default="http://localhost:8081")
+    ap.add_argument("--registry", default="http://localhost:8085")
     ap.add_argument("--subjects", default="subjects")  # accepted for CLI symmetry; not read
     args = ap.parse_args()
 
