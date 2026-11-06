@@ -22,6 +22,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      # The TypeScript round-trip test imports `avsc`; without this the job fails on a missing package.
+      - run: npm ci
       - run: make ci
 
   compatibility:
