@@ -37,7 +37,7 @@ test-py:
 	uv run pytest tests -q
 
 test-ts:
-	node --test "tests/ts/*.test.mjs"
+	node --test tests/ts/*.test.mjs
 
 typecheck:               ## tsc type-check the generated TypeScript client
 	npx tsc -p clients/typescript/tsconfig.json --noEmit
