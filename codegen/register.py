@@ -30,6 +30,43 @@ def _pretty(obj) -> list[str]:
     return json.dumps(obj, indent=2, sort_keys=False).splitlines()
 
 
+_PRIMS = {"null", "boolean", "int", "long", "float", "double", "bytes", "string"}
+
+
+def _canon(node, ns=""):
+    """Canonicalise like the Schema Registry: split dotted names into name+namespace, drop a
+    namespace equal to the enclosing one, and shorten named-type references accordingly. Lets
+    ``--check`` compare local sources (fullname in ``name``) with the registry's stored form."""
+    if isinstance(node, str):
+        if node in _PRIMS or "." not in node:
+            return node
+        n_ns, _, short = node.rpartition(".")
+        return short if n_ns == ns else node
+    if isinstance(node, list):
+        return [_canon(x, ns) for x in node]
+    if isinstance(node, dict):
+        out = dict(node)
+        t = node.get("type")
+        if t in ("record", "enum", "fixed") and "name" in node:
+            name = node["name"]
+            if "." in name:
+                n_ns, _, short = name.rpartition(".")
+            else:
+                n_ns, short = node.get("namespace", ns), name
+            out.pop("namespace", None)
+            out["name"] = short
+            if n_ns and n_ns != ns:
+                out["namespace"] = n_ns
+            ns = n_ns
+        for k in ("type", "items", "values"):
+            if k in out and not (k == "type" and t in ("record", "enum", "fixed")):
+                out[k] = _canon(out[k], ns)
+        if "fields" in out:
+            out["fields"] = [dict(f, type=_canon(f["type"], ns)) for f in out["fields"]]
+        return out
+    return node
+
+
 def check_registered(client, topics=TOPICS) -> list[str]:
     """Compare local schemas to the registry's latest versions. Returns problem strings.
 
@@ -45,8 +82,8 @@ def check_registered(client, topics=TOPICS) -> list[str]:
             continue
         resp.raise_for_status()
         body = resp.json()
-        remote = json.loads(body["schema"])
-        local = json.loads(json.dumps(inlined_schema(t)))
+        remote = _canon(json.loads(body["schema"]))
+        local = _canon(json.loads(json.dumps(inlined_schema(t))))
         if remote == local:
             print(f"in sync    {subject} (registry v{body.get('version')})")
             continue
