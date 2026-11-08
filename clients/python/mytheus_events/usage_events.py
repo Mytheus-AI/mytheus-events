@@ -13,3 +13,4 @@ class UsageEvent(BaseModel):
     event_type: Literal['meeting_minute', 'agent_token', 'transcription_second', 'storage_gb']
     quantity: float
     source_id: str
+    model_tier: Optional[str] = None

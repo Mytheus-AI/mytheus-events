@@ -12,5 +12,6 @@
   "user_id": "user_id",
   "event_type": "meeting_minute",
   "quantity": 1.5,
-  "source_id": "source_id"
+  "source_id": "source_id",
+  "model_tier": "model_tier"
 }

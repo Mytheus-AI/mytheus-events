@@ -8,6 +8,7 @@
     { "name": "user_id",    "type": ["null", "string"], "default": null },
     { "name": "event_type", "type": { "type": "enum", "name": "UsageEventType", "symbols": ["meeting_minute", "agent_token", "transcription_second", "storage_gb"] } },
     { "name": "quantity",   "type": "double" },
-    { "name": "source_id",  "type": "string" }
+    { "name": "source_id",  "type": "string" },
+    { "name": "model_tier", "type": ["null", "string"], "default": null, "doc": "haiku | sonnet | opus for agent_token; null otherwise. The tier name, not the model id (ADR-0029 D4)." }
   ]
 }

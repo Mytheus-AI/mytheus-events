@@ -9,4 +9,5 @@ export interface UsageEvent {
   event_type: "meeting_minute" | "agent_token" | "transcription_second" | "storage_gb";
   quantity: number;
   source_id: string;
+  model_tier?: string | null;
 }
