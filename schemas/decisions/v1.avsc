@@ -11,6 +11,7 @@
     { "name": "rationale",    "type": "string" },
     { "name": "confidence",   "type": "float" },
     { "name": "status",       "type": { "type": "enum", "name": "DecisionStatus", "symbols": ["confirmed"] } },
-    { "name": "confirmed_by", "type": { "type": "string", "logicalType": "uuid" } }
+    { "name": "confirmed_by", "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "supersedes",   "type": ["null", { "type": "string", "logicalType": "uuid" }], "default": null, "doc": "The confirmed decision this one replaces, or null. knowledge-graph-service writes FOLLOWS_FROM from it." }
   ]
 }

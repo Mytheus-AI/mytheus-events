@@ -12,4 +12,5 @@ export interface Decision {
   confidence: number;
   status: "confirmed";
   confirmed_by: string;
+  supersedes?: string | null;
 }
