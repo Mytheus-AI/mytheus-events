@@ -15,5 +15,6 @@
   "rationale": "rationale",
   "confidence": 0.9,
   "status": "confirmed",
-  "confirmed_by": "00000000-0000-4000-8000-0000000000aa"
+  "confirmed_by": "00000000-0000-4000-8000-0000000000aa",
+  "supersedes": "00000000-0000-4000-8000-0000000000aa"
 }

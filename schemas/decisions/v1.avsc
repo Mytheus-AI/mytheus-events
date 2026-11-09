@@ -11,6 +11,7 @@
     { "name": "rationale",    "type": "string" },
     { "name": "confidence",   "type": "float" },
     { "name": "status",       "type": { "type": "enum", "name": "DecisionStatus", "symbols": ["confirmed"] } },
-    { "name": "confirmed_by", "type": { "type": "string", "logicalType": "uuid" } }
+    { "name": "confirmed_by", "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "supersedes",   "type": ["null", { "type": "string", "logicalType": "uuid" }], "default": null, "doc": "The earlier decision this one replaces; the FOLLOWS_FROM source. Null for a first decision (mytheus-docs ADR-0031 D2)." }
   ]
 }

@@ -16,3 +16,4 @@ class Decision(BaseModel):
     confidence: float
     status: Literal['confirmed']
     confirmed_by: str
+    supersedes: Optional[str] = None
