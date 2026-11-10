@@ -141,7 +141,7 @@ The compatibility rule is **BACKWARD**, enforced in CI against the registered su
 - Add a field **with a default**.
 - Remove a field that **had a default**.
 - Widen a field via a union with `null` plus a default.
-- Append enum symbols at the tail with a default.
+- Append enum symbols at the tail with a default. (Exception: `AgentResult.agent` / `AgentClass` has no default on purpose; see its schema doc. Avro uses the *reader's* default, so a default never helps a reader older than the new symbol: consumers must tolerate a new symbol before a producer emits it.)
 
 **Forbidden**
 

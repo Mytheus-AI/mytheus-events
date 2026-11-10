@@ -4,6 +4,11 @@ Each fixture is a schema-valid value with a real EventEnvelopeHeader. Values are
 type-directed from the schema (first enum symbol, one array element, non-null union branch),
 then org_id / idempotency_key / producer are set to canonical-looking values. Every fixture is
 round-tripped through fastavro before it is written, so a bad fixture fails generation.
+
+fixtures/examples/<name>.json holds curated per-kind examples on top of the one-per-topic
+goldens: a synthesized value cannot show a payload_json shape, so the kinds whose payload is
+contracted in the schema doc get a hand-specified example here (EXAMPLES), generated and
+round-tripped the same way. tests/ validates their payload_json against that contract.
 """
 from __future__ import annotations
 
@@ -20,6 +25,60 @@ from _schemas import (
 
 ORG = "00000000-0000-4000-8000-000000000001"
 SAMPLE_UUID = "00000000-0000-4000-8000-0000000000aa"
+EXAMPLES_DIR = os.path.join(FIXTURES_DIR, "examples")
+
+# MeetingAgent meeting_update (ADR-0038 D7): one batched record per meeting per window, user_id
+# is the host. Same meeting/window/host in both, so both share one idempotency key shape.
+_MEETING = "00000000-0000-4000-8000-0000000000b1"
+_HOST = "00000000-0000-4000-8000-0000000000b2"
+_ITEM_1 = "00000000-0000-4000-8000-0000000000c1"
+_ITEM_2 = "00000000-0000-4000-8000-0000000000c2"
+_NUDGE = "00000000-0000-4000-8000-0000000000d1"
+_CHUNK = "00000000-0000-4000-8000-0000000000e1"
+
+
+def _meeting_update(window_id: str, event_id: str, payload: dict, content: str) -> dict:
+    return {
+        "header": {"event_id": event_id,
+                   "idempotency_key": f"agentresult:{_MEETING}:{window_id}:{_HOST}:MeetingAgent",
+                   "producer": "agent-runtime-service"},
+        "meeting_id": _MEETING, "window_id": window_id, "user_id": _HOST,
+        "agent": "MeetingAgent", "kind": "meeting_update",
+        "relevance_score": 1.0, "confidence": 0.9, "content": content,
+        "payload_json": json.dumps(payload), "source_chunk_ids": [_CHUNK],
+    }
+
+
+# name -> (topic, overrides applied on top of the synthesized golden for that topic).
+EXAMPLES: dict[str, tuple[str, dict]] = {
+    "agent-results.meeting_update": ("agent-results", _meeting_update(
+        "w-000012", "00000000-0000-4000-8000-0000000000f1",
+        {
+            "updates": [
+                {"item_id": _ITEM_1, "status": "covered",
+                 "note": "Q3 budget agreed at 120k; finance to confirm the vendor split."},
+                {"item_id": _ITEM_2, "status": "in_progress",
+                 "note": "Hiring plan discussion started."},
+            ],
+            "nudge": {"id": _NUDGE, "type": "over_time", "item_id": _ITEM_1,
+                      "content": "Budget review ran past its 10 minutes."},
+            "surfaced": True,
+        },
+        "Budget review covered; hiring plan in progress.",
+    )),
+    "agent-results.meeting_update.no-nudge": ("agent-results", _meeting_update(
+        "w-000013", "00000000-0000-4000-8000-0000000000f2",
+        {
+            "updates": [
+                {"item_id": _ITEM_2, "status": "covered",
+                 "note": "Two backend hires approved for Q4."},
+            ],
+            "nudge": None,
+            "surfaced": True,
+        },
+        "Hiring plan covered.",
+    )),
+}
 
 # fullname/name -> record schema, for resolving referenced named types (the envelope).
 NAMED: dict[str, dict] = {}
@@ -86,7 +145,27 @@ def main() -> None:
             json.dump(record, f, indent=2)
             f.write("\n")
 
-    print(f"generated {len(TOPICS)} golden fixtures (all round-tripped through fastavro)")
+    os.makedirs(EXAMPLES_DIR, exist_ok=True)
+    for name, (t, overrides) in EXAMPLES.items():
+        with open(os.path.join(FIXTURES_DIR, f"{t}.json")) as f:
+            record = json.load(f)
+        for key, value in overrides.items():
+            if key == "header":
+                record["header"].update(value)
+            else:
+                record[key] = value
+        parsed = load_topic(t)
+        buf = io.BytesIO()
+        schemaless_writer(buf, parsed, record)
+        buf.seek(0)
+        back = schemaless_reader(buf, parsed)
+        assert back["agent"] == record["agent"] and back["kind"] == record["kind"], name
+        with open(os.path.join(EXAMPLES_DIR, f"{name}.json"), "w") as f:
+            json.dump(record, f, indent=2)
+            f.write("\n")
+
+    print(f"generated {len(TOPICS)} golden fixtures + {len(EXAMPLES)} per-kind examples "
+          "(all round-tripped through fastavro)")
 
 
 if __name__ == "__main__":

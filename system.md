@@ -60,6 +60,8 @@ Every event value opens with the shared `EventEnvelopeHeader` (namespace `io.nex
 - **Avro subject:** `agent-results-value` (schema `AgentResult`)
 - **Purpose:** Agent output (notes, scores, suggestions). Bus is transient transport; read models persist in `core-api`.
 - **Idempotency key:** `agentresult:{meeting_id}:{window_id}:{user_id}:{agent}`
+- **`agent` / `kind` evolution:** symbols are appended at the tail only. `AgentResultKind` defaults to `note`; `AgentClass` deliberately has no default (a fallback would relabel one agent's output as another's). Consumers decode with the writer schema and ignore `(agent, kind)` pairs they do not handle, and must ship that before any producer emits a new symbol.
+- **`kind = meeting_update`** (`agent = MeetingAgent`, ADR-0038 D7): one record per meeting per window, `user_id` = the host. `payload_json` = `{"updates": [{"item_id": uuid, "status": "in_progress" | "covered", "note": str (up to 300 chars)}], "nudge": {"id": uuid, "type": "off_agenda" | "over_time" | "unaddressed", "item_id": uuid | null, "content": str (up to 200 chars)} | null, "surfaced": true}`, at most one update per item. `core-api` applies `updates` to `meeting_agenda_items`; the `nudge` is not persisted and goes to the host only. Examples: `fixtures/examples/agent-results.meeting_update*.json`.
 
 #### `decisions`
 - **Producer:** `core-api` (outbox, on confirm)

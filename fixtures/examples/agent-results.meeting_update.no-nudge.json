@@ -1,0 +1,24 @@
+{
+  "header": {
+    "event_id": "00000000-0000-4000-8000-0000000000f2",
+    "idempotency_key": "agentresult:00000000-0000-4000-8000-0000000000b1:w-000013:00000000-0000-4000-8000-0000000000b2:MeetingAgent",
+    "org_id": "00000000-0000-4000-8000-000000000001",
+    "schema_version": 1,
+    "producer": "agent-runtime-service",
+    "occurred_at": 1700000000000000,
+    "correlation_id": null,
+    "causation_id": null
+  },
+  "meeting_id": "00000000-0000-4000-8000-0000000000b1",
+  "window_id": "w-000013",
+  "user_id": "00000000-0000-4000-8000-0000000000b2",
+  "agent": "MeetingAgent",
+  "kind": "meeting_update",
+  "relevance_score": 1.0,
+  "confidence": 0.9,
+  "content": "Hiring plan covered.",
+  "payload_json": "{\"updates\": [{\"item_id\": \"00000000-0000-4000-8000-0000000000c2\", \"status\": \"covered\", \"note\": \"Two backend hires approved for Q4.\"}], \"nudge\": null, \"surfaced\": true}",
+  "source_chunk_ids": [
+    "00000000-0000-4000-8000-0000000000e1"
+  ]
+}

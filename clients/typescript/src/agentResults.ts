@@ -8,8 +8,8 @@ export interface AgentResult {
   meeting_id: string;
   window_id: string;
   user_id: string;
-  agent: "PersonalListenerAgent" | "DecisionAgent" | "ActionAgent" | "QuestionAgent" | "ContextGapAgent" | "ProactiveAgent";
-  kind: "note" | "decision_candidate" | "action_candidate" | "suggestion" | "alert" | "context_fill";
+  agent: "PersonalListenerAgent" | "DecisionAgent" | "ActionAgent" | "QuestionAgent" | "ContextGapAgent" | "ProactiveAgent" | "MeetingAgent";
+  kind: "note" | "decision_candidate" | "action_candidate" | "suggestion" | "alert" | "context_fill" | "meeting_update";
   relevance_score: number;
   confidence: number;
   content: string;

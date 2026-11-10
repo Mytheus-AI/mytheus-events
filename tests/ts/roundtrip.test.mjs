@@ -39,3 +39,19 @@ test("21 topics round-trip through avsc and preserve org_id", () => {
     assert.ok("idempotency_key" in back.header, topic);
   }
 });
+
+test("agent-results per-kind examples round-trip through avsc (MeetingAgent meeting_update)", () => {
+  const dir = join(FIXTURES, "examples");
+  const files = readdirSync(dir).filter((f) => f.startsWith("agent-results.") && f.endsWith(".json"));
+  assert.ok(files.length >= 2, "expected the meeting_update examples");
+  const type = typeFor("agent-results");
+  for (const f of files) {
+    const rec = readJson(join(dir, f));
+    const back = type.fromBuffer(type.toBuffer(rec));
+    assert.strictEqual(back.agent, "MeetingAgent", f);
+    assert.strictEqual(back.kind, "meeting_update", f);
+    const payload = JSON.parse(back.payload_json);
+    assert.deepStrictEqual(Object.keys(payload).sort(), ["nudge", "surfaced", "updates"], f);
+    assert.strictEqual(payload.surfaced, true, f);
+  }
+});
