@@ -46,6 +46,42 @@ def _meeting_update(window_id: str, event_id: str, payload: dict, content: str) 
         "agent": "MeetingAgent", "kind": "meeting_update",
         "relevance_score": 1.0, "confidence": 0.9, "content": content,
         "payload_json": json.dumps(payload), "source_chunk_ids": [_CHUNK],
+        # an agenda update quotes no one: no moment (polish program fields stay null)
+        "moment_id": None, "why": None, "updates_candidate_id": None,
+        "window_start_ms": None, "window_end_ms": None,
+    }
+
+
+_ACTION = "00000000-0000-4000-8000-0000000000a1"
+_MOMENT = "00000000-0000-4000-8000-0000000000b1"
+_OWNER = "00000000-0000-4000-8000-0000000000b2"
+
+
+def _action_update() -> dict:
+    """Polish program, memory inside the meeting + one card per moment: an ActionAgent record
+    that UPDATES an open card (same id, updates_candidate_id) and points at its moment."""
+    cand = {
+        "id": _ACTION, "content": "Send the pricing deck to Acme by Friday",
+        "confidence": 0.88, "surfaced": True, "assignee_id": _OWNER,
+        "due_date": "2026-11-13", "depends_on": [],
+        "updates_candidate_id": _ACTION, "moment_id": _MOMENT,
+        "quote": "I'll take the Acme deck, I can get it out by Friday.",
+        "speaker_id": _OWNER, "speaker_label": "Priya Sharma",
+        "start_ms": 754_200, "end_ms": 757_900, "why": "Refines an earlier card",
+    }
+    window_id = f"{_MEETING}:752000"
+    return {
+        "header": {"event_id": "00000000-0000-4000-8000-0000000000f3",
+                   "idempotency_key": f"agentresult:{_MEETING}:{window_id}:{_MEETING}:ActionAgent",
+                   "producer": "agent-runtime-service"},
+        "meeting_id": _MEETING, "window_id": window_id, "user_id": _MEETING,
+        "agent": "ActionAgent", "kind": "action_candidate",
+        "relevance_score": 0.9, "confidence": 0.88, "content": cand["content"],
+        "payload_json": json.dumps({"candidates": [cand], "prompt": "action_agent@v3",
+                                    "model_tier": "sonnet"}),
+        "source_chunk_ids": [_CHUNK],
+        "moment_id": _MOMENT, "why": "Refines an earlier card",
+        "updates_candidate_id": _ACTION, "window_start_ms": 752_000, "window_end_ms": 757_900,
     }
 
 
@@ -78,6 +114,7 @@ EXAMPLES: dict[str, tuple[str, dict]] = {
         },
         "Hiring plan covered.",
     )),
+    "agent-results.action_candidate.update": ("agent-results", _action_update()),
 }
 
 # fullname/name -> record schema, for resolving referenced named types (the envelope).

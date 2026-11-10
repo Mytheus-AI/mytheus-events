@@ -127,7 +127,7 @@ with an install hint otherwise, so installing the wheel into its environment is 
 
 ```bash
 make -C ../mytheus-events build-python-client
-uv pip install ../mytheus-events/dist/mytheus_events-0.2.0-py3-none-any.whl   # or pip install
+uv pip install ../mytheus-events/dist/mytheus_events-0.3.0-py3-none-any.whl   # or pip install
 ```
 
 To **add a topic**, you must first land it in `_canon/03-event-taxonomy.md` - topic names and partition keys are frozen there. This repo only realizes the canon; it never invents a topic.

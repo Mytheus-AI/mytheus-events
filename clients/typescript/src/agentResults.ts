@@ -15,4 +15,9 @@ export interface AgentResult {
   content: string;
   payload_json: string;
   source_chunk_ids: string[];
+  moment_id?: string | null;
+  why?: string | null;
+  updates_candidate_id?: string | null;
+  window_start_ms?: number | null;
+  window_end_ms?: number | null;
 }

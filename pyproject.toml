@@ -1,6 +1,6 @@
 [project]
 name = "mytheus-events"
-version = "0.2.0"
+version = "0.3.0"
 description = "Mytheus (NEXUS) frozen Avro event contracts + Schema Registry subjects + codegen"
 requires-python = ">=3.11"
 # The shipped wheel (clients/python/mytheus_events) is pydantic models only; that is the sole
