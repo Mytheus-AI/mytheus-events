@@ -211,12 +211,12 @@ Every event value opens with the shared `EventEnvelopeHeader` (namespace `io.nex
 - **Purpose:** Clerk webhook user-sync inbox.
 
 #### `admin-events`
-- **Producer:** `admin-ops-service`
-- **Consumers:** `workflow-service`, `admin-ops-service` (audit-log write)
+- **Producer:** `admin-ops-service`; since polish wave 3 also `transcription-service`, `embedding-service`, `search-service`, `knowledge-graph-service` (`erasure_completed`, one per store)
+- **Consumers:** `workflow-service`, `admin-ops-service` (audit-log write, erasure status), and the erasure consumer groups `transcription-service.erasure`, `embedding-service.erasure`, `search-service.erasure`, `knowledge-graph-service.erasure` (`erasure_requested` only)
 - **Partition key:** `org_id`
-- **Retention:** retain (compact)
+- **Retention:** 365 days, delete (was compact: keyed by org_id, compaction could drop an older `erasure_requested` before every store had read it)
 - **Avro subject:** `admin-events-value` (schema `AdminEvent`)
-- **Purpose:** Flag changed / tenant suspended / erasure requested. Mirrored to `audit_logs`.
+- **Purpose:** Flag changed / tenant suspended / erasure requested / erasure completed (`detail_json` = `{"erasure_id", "store", "service", "counts"}`, idempotency key `erasure_completed:{erasure_id}:{store}`; stores `transcript_chunks`, `vectors`, `search_index`, `knowledge_graph`). Mirrored to `audit_logs`.
 
 #### `agent-feedback`
 - **Producer:** `core-api` (transactional outbox, with the `agent_feedback` row)

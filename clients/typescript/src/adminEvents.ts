@@ -5,7 +5,7 @@ import type { EventEnvelopeHeader } from "./envelope";
 
 export interface AdminEvent {
   header: EventEnvelopeHeader;
-  event_type: "flag_changed" | "tenant_suspended" | "erasure_requested";
+  event_type: "flag_changed" | "tenant_suspended" | "erasure_requested" | "erasure_completed";
   actor_id: string;
   target_type: string;
   target_id: string;

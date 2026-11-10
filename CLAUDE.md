@@ -72,7 +72,7 @@ Control-plane and observability topics:
 | `presence-events` | `realtime-gateway` | `core-api` (analytics) | `org_id` |
 | `notification-delivery-events` | `notification-service` | `admin-ops-service`, `core-api` | `org_id` |
 | `user-sync-events` | `identity-tenant-service` (Clerk inbox) | `identity-tenant-service` | `org_id` |
-| `admin-events` | `admin-ops-service` | `workflow-service`, `admin-ops-service` (audit-log write) | `org_id` |
+| `admin-events` | `admin-ops-service`; erasure stores (`erasure_completed`) | `workflow-service`, `admin-ops-service` (audit-log write), the four `*.erasure` groups | `org_id` |
 | `agent-feedback` | `core-api` (outbox) | `agent-runtime-service`, `core-api` (person memory) | `org_id` |
 
 Reconciliation notes that bite if you get them wrong: `usage-events` is produced only by `agent-runtime-service` and `rag-service` (transcription minutes are metered by `billing-metering-service`, not emitted by `transcription-service`). The `admin-events` audit-log write lands in `admin-ops-service`; there is no separate `audit-service`.

@@ -9,7 +9,7 @@ from .envelope import EventEnvelopeHeader
 
 class AdminEvent(BaseModel):
     header: EventEnvelopeHeader
-    event_type: Literal['flag_changed', 'tenant_suspended', 'erasure_requested']
+    event_type: Literal['flag_changed', 'tenant_suspended', 'erasure_requested', 'erasure_completed']
     actor_id: str
     target_type: str
     target_id: str
