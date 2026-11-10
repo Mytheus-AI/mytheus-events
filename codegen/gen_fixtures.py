@@ -49,6 +49,48 @@ def _meeting_update(window_id: str, event_id: str, payload: dict, content: str) 
     }
 
 
+# Minutes (polish program "Minutes for everyone"): after the meeting ended, one MeetingAgent
+# record per participant (scope personal, user_id = the participant) and one shared record
+# (user_id = the nil uuid). window_id is "minutes:{generation}", one generation per meeting end.
+_PERSON = "00000000-0000-4000-8000-0000000000b3"
+_NIL = "00000000-0000-0000-0000-000000000000"
+_GENERATION = "3f2a9c1e7b44"
+_DECISION = "00000000-0000-4000-8000-0000000000a7"
+_MINUTES_COMMON = {
+    "prompt_version": "minutes@v1",
+    "generation": _GENERATION,
+    "status": "ready",
+    "reason": None,
+    "summary": "The team agreed the Q3 budget at 120k and opened the vendor question again.",
+    "decisions": [
+        {"text": "Q3 budget is 120k.", "status": "agreed", "decision_id": _DECISION},
+        {"text": "Pause the second vendor pilot until October.", "status": "deferred",
+         "decision_id": None},
+    ],
+    "open_items": [
+        {"text": "Confirm the vendor split with finance.", "owner_user_id": _PERSON,
+         "owner_name": "Sam Lee", "due": "next Tuesday"},
+    ],
+    "unanswered_questions": [
+        {"text": "Does legal need to review the new data terms?", "asked_by_user_id": None,
+         "asked_by_name": "Maya Patel"},
+    ],
+}
+
+
+def _minutes(user_id: str, event_id: str, payload: dict) -> dict:
+    window_id = f"minutes:{_GENERATION}"
+    return {
+        "header": {"event_id": event_id,
+                   "idempotency_key": f"agentresult:{_MEETING}:{window_id}:{user_id}:MeetingAgent",
+                   "producer": "agent-runtime-service"},
+        "meeting_id": _MEETING, "window_id": window_id, "user_id": user_id,
+        "agent": "MeetingAgent", "kind": "minutes",
+        "relevance_score": 1.0, "confidence": 1.0, "content": payload["summary"],
+        "payload_json": json.dumps(payload), "source_chunk_ids": [],
+    }
+
+
 # name -> (topic, overrides applied on top of the synthesized golden for that topic).
 EXAMPLES: dict[str, tuple[str, dict]] = {
     "agent-results.meeting_update": ("agent-results", _meeting_update(
@@ -77,6 +119,29 @@ EXAMPLES: dict[str, tuple[str, dict]] = {
             "surfaced": True,
         },
         "Hiring plan covered.",
+    )),
+    "agent-results.minutes.personal": ("agent-results", _minutes(
+        _PERSON, "00000000-0000-4000-8000-0000000000f3",
+        {
+            "scope": "personal",
+            **_MINUTES_COMMON,
+            "promises": [
+                {"text": "Send the revised vendor comparison to finance.", "to_name": "Maya Patel",
+                 "due": "Friday"},
+            ],
+        },
+    )),
+    "agent-results.minutes.shared": ("agent-results", _minutes(
+        _NIL, "00000000-0000-4000-8000-0000000000f4",
+        {"scope": "shared", **_MINUTES_COMMON, "promises": []},
+    )),
+    "agent-results.minutes.unavailable": ("agent-results", _minutes(
+        _NIL, "00000000-0000-4000-8000-0000000000f5",
+        {
+            "scope": "shared", "prompt_version": "minutes@v1", "generation": _GENERATION,
+            "status": "unavailable", "reason": "budget", "summary": "", "decisions": [],
+            "open_items": [], "unanswered_questions": [], "promises": [],
+        },
     )),
 }
 

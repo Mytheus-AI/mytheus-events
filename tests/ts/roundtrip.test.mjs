@@ -42,7 +42,9 @@ test("21 topics round-trip through avsc and preserve org_id", () => {
 
 test("agent-results per-kind examples round-trip through avsc (MeetingAgent meeting_update)", () => {
   const dir = join(FIXTURES, "examples");
-  const files = readdirSync(dir).filter((f) => f.startsWith("agent-results.") && f.endsWith(".json"));
+  const files = readdirSync(dir).filter(
+    (f) => f.startsWith("agent-results.meeting_update") && f.endsWith(".json"),
+  );
   assert.ok(files.length >= 2, "expected the meeting_update examples");
   const type = typeFor("agent-results");
   for (const f of files) {
@@ -53,5 +55,23 @@ test("agent-results per-kind examples round-trip through avsc (MeetingAgent meet
     const payload = JSON.parse(back.payload_json);
     assert.deepStrictEqual(Object.keys(payload).sort(), ["nudge", "surfaced", "updates"], f);
     assert.strictEqual(payload.surfaced, true, f);
+  }
+});
+
+test("agent-results minutes examples round-trip through avsc (MeetingAgent minutes)", () => {
+  const dir = join(FIXTURES, "examples");
+  const files = readdirSync(dir).filter(
+    (f) => f.startsWith("agent-results.minutes") && f.endsWith(".json"),
+  );
+  assert.strictEqual(files.length, 3, "expected personal, shared and unavailable minutes");
+  const type = typeFor("agent-results");
+  for (const f of files) {
+    const rec = readJson(join(dir, f));
+    const back = type.fromBuffer(type.toBuffer(rec));
+    assert.strictEqual(back.agent, "MeetingAgent", f);
+    assert.strictEqual(back.kind, "minutes", f);
+    const payload = JSON.parse(back.payload_json);
+    assert.ok(["personal", "shared"].includes(payload.scope), f);
+    if (payload.scope === "shared") assert.deepStrictEqual(payload.promises, [], f);
   }
 });
