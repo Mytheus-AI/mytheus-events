@@ -1,6 +1,6 @@
 {
   "name": "@mytheus/events",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Mytheus (NEXUS) generated TypeScript types for the frozen Avro event contracts (mytheus-events).",
   "type": "module",
   "types": "./dist/index.d.ts",
