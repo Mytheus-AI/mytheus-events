@@ -74,7 +74,7 @@ mk notification-delivery-events 6 $D30; mk_dlq notification-delivery-events
 mk user-sync-events     6 $D7 ; mk_dlq user-sync-events
 # Not compacted (polish wave 3): keyed by org_id, compaction could drop an older
 # erasure_requested before every store's erasure consumer has read it.
-mk admin-events 6 "${D365}"  ; mk_dlq admin-events
+mk admin-events 6 $D365     ; mk_dlq admin-events
 
 # --- learning (polish wave 2): core-api outbox -> agent-runtime-service, core-api memory ---
 mk agent-feedback      12 $D7 ; mk_dlq agent-feedback

@@ -24,7 +24,7 @@ ARCH = os.path.join(DOCS, "07-event-architecture.md")
 HOUR_MS = 3_600_000
 DAY_MS = 24 * HOUR_MS
 PRESETS = {"H1": HOUR_MS, "D1": DAY_MS, "D3": 3 * DAY_MS, "D7": 7 * DAY_MS,
-           "D14": 14 * DAY_MS, "D30": 30 * DAY_MS}
+           "D14": 14 * DAY_MS, "D30": 30 * DAY_MS, "D365": 365 * DAY_MS}
 
 
 def parse_script():
