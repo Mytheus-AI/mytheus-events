@@ -70,3 +70,21 @@ test("agent-results moment fields round-trip through avsc (ActionAgent update)",
   assert.strictEqual(cand.id, cand.updates_candidate_id);
   assert.strictEqual(cand.moment_id, back.moment_id);
 });
+
+test("agent-results minutes examples round-trip through avsc (MeetingAgent minutes)", () => {
+  const dir = join(FIXTURES, "examples");
+  const files = readdirSync(dir).filter(
+    (f) => f.startsWith("agent-results.minutes") && f.endsWith(".json"),
+  );
+  assert.strictEqual(files.length, 3, "expected personal, shared and unavailable minutes");
+  const type = typeFor("agent-results");
+  for (const f of files) {
+    const rec = readJson(join(dir, f));
+    const back = type.fromBuffer(type.toBuffer(rec));
+    assert.strictEqual(back.agent, "MeetingAgent", f);
+    assert.strictEqual(back.kind, "minutes", f);
+    const payload = JSON.parse(back.payload_json);
+    assert.ok(["personal", "shared"].includes(payload.scope), f);
+    if (payload.scope === "shared") assert.deepStrictEqual(payload.promises, [], f);
+  }
+});
