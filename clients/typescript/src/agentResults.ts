@@ -9,7 +9,7 @@ export interface AgentResult {
   window_id: string;
   user_id: string;
   agent: "PersonalListenerAgent" | "DecisionAgent" | "ActionAgent" | "QuestionAgent" | "ContextGapAgent" | "ProactiveAgent";
-  kind: "note" | "decision_candidate" | "action_candidate" | "suggestion" | "alert";
+  kind: "note" | "decision_candidate" | "action_candidate" | "suggestion" | "alert" | "context_fill";
   relevance_score: number;
   confidence: number;
   content: string;

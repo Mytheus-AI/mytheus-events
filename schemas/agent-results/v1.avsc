@@ -11,7 +11,7 @@
     { "name": "agent",           "type": { "type": "enum", "name": "AgentClass",
               "symbols": ["PersonalListenerAgent", "DecisionAgent", "ActionAgent", "QuestionAgent", "ContextGapAgent", "ProactiveAgent"] } },
     { "name": "kind",            "type": { "type": "enum", "name": "AgentResultKind",
-              "symbols": ["note", "decision_candidate", "action_candidate", "suggestion", "alert"] } },
+              "symbols": ["note", "decision_candidate", "action_candidate", "suggestion", "alert", "context_fill"], "default": "note" } },
     { "name": "relevance_score", "type": "float" },
     { "name": "confidence",      "type": "float" },
     { "name": "content",         "type": "string" },

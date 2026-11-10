@@ -13,7 +13,7 @@ class AgentResult(BaseModel):
     window_id: str
     user_id: str
     agent: Literal['PersonalListenerAgent', 'DecisionAgent', 'ActionAgent', 'QuestionAgent', 'ContextGapAgent', 'ProactiveAgent']
-    kind: Literal['note', 'decision_candidate', 'action_candidate', 'suggestion', 'alert']
+    kind: Literal['note', 'decision_candidate', 'action_candidate', 'suggestion', 'alert', 'context_fill']
     relevance_score: float
     confidence: float
     content: str
