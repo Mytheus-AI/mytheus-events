@@ -21,6 +21,7 @@
     "presence-events-value": "BACKWARD",
     "notification-delivery-events-value": "BACKWARD",
     "user-sync-events-value": "BACKWARD",
-    "admin-events-value": "BACKWARD"
+    "admin-events-value": "BACKWARD",
+    "agent-feedback-value": "BACKWARD"
   }
 }

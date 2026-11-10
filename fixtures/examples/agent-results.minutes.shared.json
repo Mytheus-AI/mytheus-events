@@ -1,0 +1,27 @@
+{
+  "header": {
+    "event_id": "00000000-0000-4000-8000-0000000000f4",
+    "idempotency_key": "agentresult:00000000-0000-4000-8000-0000000000b1:minutes:3f2a9c1e7b44:00000000-0000-0000-0000-000000000000:MeetingAgent",
+    "org_id": "00000000-0000-4000-8000-000000000001",
+    "schema_version": 1,
+    "producer": "agent-runtime-service",
+    "occurred_at": 1700000000000000,
+    "correlation_id": null,
+    "causation_id": null
+  },
+  "meeting_id": "00000000-0000-4000-8000-0000000000b1",
+  "window_id": "minutes:3f2a9c1e7b44",
+  "user_id": "00000000-0000-0000-0000-000000000000",
+  "agent": "MeetingAgent",
+  "kind": "minutes",
+  "relevance_score": 1.0,
+  "confidence": 1.0,
+  "content": "The team agreed the Q3 budget at 120k and opened the vendor question again.",
+  "payload_json": "{\"scope\": \"shared\", \"prompt_version\": \"minutes@v1\", \"generation\": \"3f2a9c1e7b44\", \"status\": \"ready\", \"reason\": null, \"summary\": \"The team agreed the Q3 budget at 120k and opened the vendor question again.\", \"decisions\": [{\"text\": \"Q3 budget is 120k.\", \"status\": \"agreed\", \"decision_id\": \"00000000-0000-4000-8000-0000000000a7\"}, {\"text\": \"Pause the second vendor pilot until October.\", \"status\": \"deferred\", \"decision_id\": null}], \"open_items\": [{\"text\": \"Confirm the vendor split with finance.\", \"owner_user_id\": \"00000000-0000-4000-8000-0000000000b3\", \"owner_name\": \"Sam Lee\", \"due\": \"next Tuesday\"}], \"unanswered_questions\": [{\"text\": \"Does legal need to review the new data terms?\", \"asked_by_user_id\": null, \"asked_by_name\": \"Maya Patel\"}], \"promises\": []}",
+  "source_chunk_ids": [],
+  "moment_id": "00000000-0000-4000-8000-0000000000aa",
+  "why": "why",
+  "updates_candidate_id": "00000000-0000-4000-8000-0000000000aa",
+  "window_start_ms": 1,
+  "window_end_ms": 1
+}

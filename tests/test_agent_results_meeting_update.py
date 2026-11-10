@@ -20,7 +20,9 @@ from fastavro import parse_schema, schemaless_reader, schemaless_writer
 
 from _schemas import ENVELOPE_PATH, FIXTURES_DIR, load_raw, load_topic, topic_schema_path
 
-EXAMPLES = sorted(glob.glob(os.path.join(FIXTURES_DIR, "examples", "agent-results.*.json")))
+EXAMPLES = sorted(
+    glob.glob(os.path.join(FIXTURES_DIR, "examples", "agent-results.meeting_update*.json"))
+)
 UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
 NEW_AGENTS = {"MeetingAgent"}
 NEW_KINDS = {"meeting_update"}

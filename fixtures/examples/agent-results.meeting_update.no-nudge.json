@@ -20,5 +20,10 @@
   "payload_json": "{\"updates\": [{\"item_id\": \"00000000-0000-4000-8000-0000000000c2\", \"status\": \"covered\", \"note\": \"Two backend hires approved for Q4.\"}], \"nudge\": null, \"surfaced\": true}",
   "source_chunk_ids": [
     "00000000-0000-4000-8000-0000000000e1"
-  ]
+  ],
+  "moment_id": null,
+  "why": null,
+  "updates_candidate_id": null,
+  "window_start_ms": null,
+  "window_end_ms": null
 }

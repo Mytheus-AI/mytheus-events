@@ -3,7 +3,7 @@
 Topic value schemas compose ``io.nexus.events.EventEnvelopeHeader`` by name. fastavro
 resolves that reference from a shared ``named_schemas`` namespace: parse the envelope first,
 then each topic schema into the same namespace. This module is the single place that knows
-the 21 canonical topics, the frozen 8-field header order, and the 7 frozen schema names.
+the 22 canonical topics, the frozen 8-field header order, and the 7 frozen schema names.
 """
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ HEADER_FIELDS = [
     "producer", "occurred_at", "correlation_id", "causation_id",
 ]
 
-# The 21 canonical topics, in canon order. Partition key is org_id alone on 19 of them;
+# The 22 canonical topics, in canon order. Partition key is org_id alone on 20 of them;
 # transcript-chunks and agent-stream use the composite {org_id}:{meeting_id} key instead
 # (COMPOSITE_PARTITION_KEY_TOPICS below; ADR-0017 in mytheus-docs, _canon/03-event-taxonomy.md).
 TOPICS = [
@@ -34,6 +34,7 @@ TOPICS = [
     "tenant-events", "meeting-events", "meeting-room-events", "integration-events",
     "usage-events", "billing-events", "graph-events", "embedding-events",
     "presence-events", "notification-delivery-events", "user-sync-events", "admin-events",
+    "agent-feedback",
 ]
 
 # Topics partitioned by the composite {org_id}:{meeting_id} key rather than org_id alone
@@ -58,6 +59,7 @@ IDEMPOTENCY_KEYS = {
     "notifications": "notif:{source_event_id}:{channel}:{user_id}",
     "agent-requests": "areq:{correlation_id}",
     "usage-events": "usage:{org_id}:{event_type}:{occurred_at}:{source_id}",
+    "agent-feedback": "feedback:{feedback_id}",
 }
 
 
@@ -89,7 +91,7 @@ def load_topic(topic, ns=None):
 
 
 def load_all():
-    """Return {topic: parsed_schema} for all 21 topics."""
+    """Return {topic: parsed_schema} for all 22 topics."""
     return {t: load_topic(t) for t in TOPICS}
 
 

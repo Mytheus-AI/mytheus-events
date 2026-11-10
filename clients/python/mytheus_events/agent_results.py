@@ -13,9 +13,14 @@ class AgentResult(BaseModel):
     window_id: str
     user_id: str
     agent: Literal['PersonalListenerAgent', 'DecisionAgent', 'ActionAgent', 'QuestionAgent', 'ContextGapAgent', 'ProactiveAgent', 'MeetingAgent']
-    kind: Literal['note', 'decision_candidate', 'action_candidate', 'suggestion', 'alert', 'context_fill', 'meeting_update']
+    kind: Literal['note', 'decision_candidate', 'action_candidate', 'suggestion', 'alert', 'context_fill', 'meeting_update', 'minutes']
     relevance_score: float
     confidence: float
     content: str
     payload_json: str
     source_chunk_ids: List[str]
+    moment_id: Optional[str] = None
+    why: Optional[str] = None
+    updates_candidate_id: Optional[str] = None
+    window_start_ms: Optional[int] = None
+    window_end_ms: Optional[int] = None

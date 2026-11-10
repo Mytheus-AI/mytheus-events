@@ -28,7 +28,7 @@ The Confluent wire format prepends a magic byte + 4-byte schema id to every valu
 
 ## The complete topic taxonomy
 
-All 21 topics (9 PDF-original data-plane + 12 SaaS-scale control-plane/observability). Partition key is `org_id` on **every** topic. The proposed `{org_id}:{meeting_id}` hot-tenant sub-key is **not ratified** and is not used. A paired `<topic>.dlq` (14-day retention) exists for every topic.
+All 22 topics (9 PDF-original data-plane + 12 SaaS-scale control-plane/observability + agent-feedback). Partition key is `org_id` on **every** topic. The proposed `{org_id}:{meeting_id}` hot-tenant sub-key is **not ratified** and is not used. A paired `<topic>.dlq` (14-day retention) exists for every topic.
 
 Every event value opens with the shared `EventEnvelopeHeader` (namespace `io.nexus.events`) then a topic-specific payload. Each topic's value subject is `{topic}-value`.
 
@@ -62,6 +62,8 @@ Every event value opens with the shared `EventEnvelopeHeader` (namespace `io.nex
 - **Idempotency key:** `agentresult:{meeting_id}:{window_id}:{user_id}:{agent}`
 - **`agent` / `kind` evolution:** symbols are appended at the tail only. `AgentResultKind` defaults to `note`; `AgentClass` deliberately has no default (a fallback would relabel one agent's output as another's). Consumers decode with the writer schema and ignore `(agent, kind)` pairs they do not handle, and must ship that before any producer emits a new symbol.
 - **`kind = meeting_update`** (`agent = MeetingAgent`, ADR-0038 D7): one record per meeting per window, `user_id` = the host. `payload_json` = `{"updates": [{"item_id": uuid, "status": "in_progress" | "covered", "note": str (up to 300 chars)}], "nudge": {"id": uuid, "type": "off_agenda" | "over_time" | "unaddressed", "item_id": uuid | null, "content": str (up to 200 chars)} | null, "surfaced": true}`, at most one update per item. `core-api` applies `updates` to `meeting_agenda_items`; the `nudge` is not persisted and goes to the host only. Examples: `fixtures/examples/agent-results.meeting_update*.json`.
+- **Moments and updates** (polish program; optional top-level fields, default null): `moment_id` (uuid5 over meeting_id and the quoted final's chunk_id, shared by every result about the same words), `why` (<= 200 chars), `updates_candidate_id` (a decision/action candidate that updates an existing card; the candidate's id is that same id), `window_start_ms` / `window_end_ms` (meeting time). They mirror the top item of `payload_json`, whose items (candidates, suggestions, a note's top level and commitments) carry their own `moment_id`, `quote`, `speaker_id`, `speaker_label`, `start_ms`, `end_ms`, `why`. Example: `fixtures/examples/agent-results.action_candidate.update.json`.
+- **`kind = minutes`** (`agent = MeetingAgent`, polish program "Minutes for everyone"): emitted once the meeting ended (`meeting-events` `ended`), `window_id = "minutes:{generation}"` (one generation per meeting end). One record per participant (`user_id` = that participant, `scope: "personal"`) and one meeting-level record (`user_id` = the nil uuid, `scope: "shared"`). `payload_json` = `{"scope", "prompt_version" ("minutes@v1"), "generation", "status": "ready" | "empty" | "unavailable", "reason": null | "no_transcript" | "budget" | "model_error", "summary": str (up to 600), "decisions": [{"text", "status": "agreed" | "tentative" | "deferred" | "reversed", "decision_id": uuid | null}], "open_items": [{"text", "owner_user_id": uuid | null, "owner_name": str | null, "due": str | null}], "unanswered_questions": [{"text", "asked_by_user_id": uuid | null, "asked_by_name": str | null}], "promises": [{"text", "to_name": str | null, "due": str | null}]}`; texts up to 300 chars, lists up to 20. The shared record never carries promises; `unavailable` is shared-only, with every list empty. Nothing naming a never-record topic is in it. `core-api` persists one `meeting_minutes` row per (meeting, participant) plus the shared row. Examples: `fixtures/examples/agent-results.minutes.*.json`.
 
 #### `decisions`
 - **Producer:** `core-api` (outbox, on confirm)
@@ -209,12 +211,21 @@ Every event value opens with the shared `EventEnvelopeHeader` (namespace `io.nex
 - **Purpose:** Clerk webhook user-sync inbox.
 
 #### `admin-events`
-- **Producer:** `admin-ops-service`
-- **Consumers:** `workflow-service`, `admin-ops-service` (audit-log write)
+- **Producer:** `admin-ops-service`; since polish wave 3 also `transcription-service`, `embedding-service`, `search-service`, `knowledge-graph-service` (`erasure_completed`, one per store)
+- **Consumers:** `workflow-service`, `admin-ops-service` (audit-log write, erasure status), and the erasure consumer groups `transcription-service.erasure`, `embedding-service.erasure`, `search-service.erasure`, `knowledge-graph-service.erasure` (`erasure_requested` only)
 - **Partition key:** `org_id`
-- **Retention:** retain (compact)
+- **Retention:** 365 days, delete (was compact: keyed by org_id, compaction could drop an older `erasure_requested` before every store had read it)
 - **Avro subject:** `admin-events-value` (schema `AdminEvent`)
-- **Purpose:** Flag changed / tenant suspended / erasure requested. Mirrored to `audit_logs`.
+- **Purpose:** Flag changed / tenant suspended / erasure requested / erasure completed (`detail_json` = `{"erasure_id", "store", "service", "counts"}`, idempotency key `erasure_completed:{erasure_id}:{store}`; stores `transcript_chunks`, `vectors`, `search_index`, `knowledge_graph`). Mirrored to `audit_logs`.
+
+#### `agent-feedback`
+- **Producer:** `core-api` (transactional outbox, with the `agent_feedback` row)
+- **Consumers:** `agent-runtime-service` (refreshes thresholds, guidance examples and person memory caches), `core-api` (incremental `person_memory` consumer)
+- **Partition key:** `org_id`
+- **Retention:** 7 days (delete)
+- **Avro subject:** `agent-feedback-value` (schema `AgentFeedback`)
+- **Idempotency key:** `feedback:{feedback_id}`
+- **Purpose:** A person confirmed, dismissed, edited, asked or saved something an agent proposed (polish wave 2, agents that learn).
 
 > Producer/consumer notes reconciled to `_canon/01-service-catalog.md`: `usage-events` producers are `agent-runtime-service` and `rag-service` **only** (transcription minutes are metered by `billing-metering-service`, not emitted by `transcription-service`). The `admin-events` audit-log write is `admin-ops-service`; there is no `audit-service` in the catalog.
 

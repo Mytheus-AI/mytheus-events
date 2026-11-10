@@ -20,5 +20,10 @@
   "payload_json": "payload_json",
   "source_chunk_ids": [
     "00000000-0000-4000-8000-0000000000aa"
-  ]
+  ],
+  "moment_id": "00000000-0000-4000-8000-0000000000aa",
+  "why": "why",
+  "updates_candidate_id": "00000000-0000-4000-8000-0000000000aa",
+  "window_start_ms": 1,
+  "window_end_ms": 1
 }

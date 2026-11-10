@@ -1,8 +1,8 @@
 """Topic list / count / partition / retention consistency across the repo and canon.
 
-schemas/ has 22 entries = 21 topics + `_envelope` (shared header, not a topic).
-subjects/ has 22 entries = 21 `{topic}-value.json` + `compatibility.json`.
-scripts/create_topics.sh must create exactly those 21 topics + 21 `.dlq` = 42.
+schemas/ has 23 entries = 22 topics + `_envelope` (shared header, not a topic).
+subjects/ has 23 entries = 22 `{topic}-value.json` + `compatibility.json`.
+scripts/create_topics.sh must create exactly those 22 topics + 22 `.dlq` = 44.
 
 Partition counts are NOT in _canon/03-event-taxonomy.md (it has retention/cleanup only); the
 canonical counts live in 07-event-architecture.md 4.2, so that table is used for partitions
@@ -24,7 +24,7 @@ ARCH = os.path.join(DOCS, "07-event-architecture.md")
 HOUR_MS = 3_600_000
 DAY_MS = 24 * HOUR_MS
 PRESETS = {"H1": HOUR_MS, "D1": DAY_MS, "D3": 3 * DAY_MS, "D7": 7 * DAY_MS,
-           "D14": 14 * DAY_MS, "D30": 30 * DAY_MS}
+           "D14": 14 * DAY_MS, "D30": 30 * DAY_MS, "D365": 365 * DAY_MS}
 
 
 def parse_script():
@@ -51,12 +51,12 @@ def test_counts_and_lists_agree():
     schema_dirs = sorted(d for d in os.listdir(SCHEMAS_DIR)
                          if os.path.isdir(os.path.join(SCHEMAS_DIR, d)))
     assert [d for d in schema_dirs if d.startswith("_")] == ["_envelope"]
-    assert len(schema_dirs) == 22
+    assert len(schema_dirs) == 23
     topic_dirs = [d for d in schema_dirs if not d.startswith("_")]
-    assert sorted(TOPICS) == topic_dirs and len(TOPICS) == 21
+    assert sorted(TOPICS) == topic_dirs and len(TOPICS) == 22
 
     subj = sorted(os.listdir(SUBJECTS_DIR))
-    assert "compatibility.json" in subj and len(subj) == 22
+    assert "compatibility.json" in subj and len(subj) == 23
     assert sorted(f[: -len("-value.json")] for f in subj if f.endswith("-value.json")) == topic_dirs
 
     script_topics, dlqs = parse_script()
@@ -139,8 +139,8 @@ def test_create_topics_is_idempotent(tmp_path):
     env = {**os.environ, "PATH": f"{rpk.parent}:{os.environ['PATH']}"}
     first = subprocess.run(["bash", SCRIPT], env=env, capture_output=True, text=True)
     assert first.returncode == 0, first.stderr
-    assert "42 created, 0 already present" in first.stdout
+    assert "44 created, 0 already present" in first.stdout
     second = subprocess.run(["bash", SCRIPT], env=env, capture_output=True, text=True)
     assert second.returncode == 0, second.stderr
-    assert "0 created, 42 already present" in second.stdout
-    assert len(os.listdir(state)) == 42
+    assert "0 created, 44 already present" in second.stdout
+    assert len(os.listdir(state)) == 44

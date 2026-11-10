@@ -23,6 +23,7 @@ from .presence_events import PresenceEvent
 from .notification_delivery_events import NotificationDeliveryEvent
 from .user_sync_events import UserSyncEvent
 from .admin_events import AdminEvent
+from .agent_feedback import AgentFeedback
 
 __all__ = [
     'EventEnvelopeHeader',
@@ -48,4 +49,5 @@ __all__ = [
     'NotificationDeliveryEvent',
     'UserSyncEvent',
     'AdminEvent',
+    'AgentFeedback',
 ]

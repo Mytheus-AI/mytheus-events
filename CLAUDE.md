@@ -32,7 +32,7 @@ The envelope. Every event value opens with the shared `EventEnvelopeHeader` (nam
 |---|---|---|
 | `event_id` | `string` (uuid) | Unique per physical emission; distinct from `idempotency_key`. |
 | `idempotency_key` | `string` | Business dedupe key; stable across producer retries of the same fact. |
-| `org_id` | `string` (uuid) | Tenant root; isolation anchor; the Kafka partition key on 19 of 21 topics, and the leading component of the `{org_id}:{meeting_id}` composite key on `transcript-chunks`/`agent-stream` (per ADR-0017 in `mytheus-docs`). Mandatory and non-nullable on every event regardless. |
+| `org_id` | `string` (uuid) | Tenant root; isolation anchor; the Kafka partition key on 20 of 22 topics, and the leading component of the `{org_id}:{meeting_id}` composite key on `transcript-chunks`/`agent-stream` (per ADR-0017 in `mytheus-docs`). Mandatory and non-nullable on every event regardless. |
 | `schema_version` | `int` (default 1) | Producer's payload schema version (observability; Registry enforces compat independently). |
 | `producer` | `string` | Owning service name (kebab-case, from the Service Catalog). |
 | `occurred_at` | `long` (timestamp-micros) | When the fact happened (UTC); not enqueue time. |
@@ -41,7 +41,7 @@ The envelope. Every event value opens with the shared `EventEnvelopeHeader` (nam
 
 ## Topic catalog
 
-All 21 topics. Partition key is `org_id` on 19 of the 21 topics; `transcript-chunks` and `agent-stream` use the composite key `{org_id}:{meeting_id}` (per ADR-0017 in `mytheus-docs`) — see their rows in the Topic catalog below. The value subject is always `{topic}-value`. A paired `<topic>.dlq` (14-day retention) exists for every topic. Producer/consumer assignments are reconciled to `_canon/01-service-catalog.md`.
+All 22 topics. Partition key is `org_id` on 20 of the 22 topics; `transcript-chunks` and `agent-stream` use the composite key `{org_id}:{meeting_id}` (per ADR-0017 in `mytheus-docs`) — see their rows in the Topic catalog below. The value subject is always `{topic}-value`. A paired `<topic>.dlq` (14-day retention) exists for every topic. Producer/consumer assignments are reconciled to `_canon/01-service-catalog.md`.
 
 Data-plane topics:
 
@@ -72,7 +72,8 @@ Control-plane and observability topics:
 | `presence-events` | `realtime-gateway` | `core-api` (analytics) | `org_id` |
 | `notification-delivery-events` | `notification-service` | `admin-ops-service`, `core-api` | `org_id` |
 | `user-sync-events` | `identity-tenant-service` (Clerk inbox) | `identity-tenant-service` | `org_id` |
-| `admin-events` | `admin-ops-service` | `workflow-service`, `admin-ops-service` (audit-log write) | `org_id` |
+| `admin-events` | `admin-ops-service`; erasure stores (`erasure_completed`) | `workflow-service`, `admin-ops-service` (audit-log write), the four `*.erasure` groups | `org_id` |
+| `agent-feedback` | `core-api` (outbox) | `agent-runtime-service`, `core-api` (person memory) | `org_id` |
 
 Reconciliation notes that bite if you get them wrong: `usage-events` is produced only by `agent-runtime-service` and `rag-service` (transcription minutes are metered by `billing-metering-service`, not emitted by `transcription-service`). The `admin-events` audit-log write lands in `admin-ops-service`; there is no separate `audit-service`.
 
@@ -108,7 +109,7 @@ docs/        # taxonomy, conventions, evolution guides
 
 This repo implements `_canon/03-event-taxonomy.md`. Topic names, partition keys, and Avro field names are frozen there. Never invent a topic, never add a second subject for a topic, never rename a field, and never use a partition key that disagrees with the canon's per-topic table — `org_id` alone for 19 topics, the composite `{org_id}:{meeting_id}` for `transcript-chunks`/`agent-stream` only (ADR-0017). Keep every identifier verbatim:
 
-- The 21 topic names listed in the Topic catalog above.
+- The 22 topic names listed in the Topic catalog above.
 - The Redis dedupe pattern: `nexus:{org_id}:dedupe:{topic}:{idempotency_key}`.
 - The envelope fields: `event_id`, `org_id`, `idempotency_key`, `correlation_id`, `occurred_at`, `schema_version` (plus `producer`, `causation_id`).
 - The agent-to-agent field names on `agent-requests` and `agent-responses`: `requester_agent_id`, `responder_target`, `correlation_id`, `deadline`.
@@ -127,6 +128,7 @@ These are the canonical key shapes. A new event must build its key from these:
 - `notifications`: `notif:{source_event_id}:{channel}:{user_id}`
 - `agent-requests`: `areq:{correlation_id}`
 - `usage-events`: `usage:{org_id}:{event_type}:{occurred_at}:{source_id}`
+- `agent-feedback`: `feedback:{feedback_id}`
 
 ## Agent-to-agent contract
 

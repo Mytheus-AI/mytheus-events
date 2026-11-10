@@ -9,10 +9,15 @@ export interface AgentResult {
   window_id: string;
   user_id: string;
   agent: "PersonalListenerAgent" | "DecisionAgent" | "ActionAgent" | "QuestionAgent" | "ContextGapAgent" | "ProactiveAgent" | "MeetingAgent";
-  kind: "note" | "decision_candidate" | "action_candidate" | "suggestion" | "alert" | "context_fill" | "meeting_update";
+  kind: "note" | "decision_candidate" | "action_candidate" | "suggestion" | "alert" | "context_fill" | "meeting_update" | "minutes";
   relevance_score: number;
   confidence: number;
   content: string;
   payload_json: string;
   source_chunk_ids: string[];
+  moment_id?: string | null;
+  why?: string | null;
+  updates_candidate_id?: string | null;
+  window_start_ms?: number | null;
+  window_end_ms?: number | null;
 }

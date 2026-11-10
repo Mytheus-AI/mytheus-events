@@ -47,7 +47,7 @@ typecheck:               ## tsc type-check the generated TypeScript client
 build-python-client:     ## build the mytheus_events pydantic client wheel into dist/
 	uv build --wheel --out-dir dist
 
-create-topics:           ## create the 21 topics + 21 .dlq = 42 (schemas/ also has _envelope, not a topic; idempotent; needs rpk + a broker)
+create-topics:           ## create the 22 topics + 22 .dlq = 44 (schemas/ also has _envelope, not a topic; idempotent; needs rpk + a broker)
 	bash scripts/create_topics.sh
 
 # One command for "make this cluster ready to carry events", because the two halves are

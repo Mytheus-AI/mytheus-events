@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Create the 21 NEXUS topics + their paired <topic>.dlq, with the canonical partition counts
+# Create the 22 NEXUS topics + their paired <topic>.dlq, with the canonical partition counts
 # and retention from 07-event-architecture.md 4.2 and _canon/03-event-taxonomy.md.
 #
 # IDEMPOTENT: safe to re-run against a cluster that already has some or all of the topics.
@@ -43,7 +43,7 @@ create() {
 }
 
 # retention presets (ms)
-H1=3600000; D1=86400000; D3=259200000; D7=604800000; D14=1209600000; D30=2592000000
+H1=3600000; D1=86400000; D3=259200000; D7=604800000; D14=1209600000; D30=2592000000; D365=31536000000
 
 mk()      { create "$1" -p "$2" -c "retention.ms=$3" -c "cleanup.policy=delete"; }
 mk_compact() { create "$1" -p "$2" -c "cleanup.policy=compact"; }
@@ -72,6 +72,11 @@ mk embedding-events    12 $D1 ; mk_dlq embedding-events
 mk presence-events     12 $H1 ; mk_dlq presence-events
 mk notification-delivery-events 6 $D30; mk_dlq notification-delivery-events
 mk user-sync-events     6 $D7 ; mk_dlq user-sync-events
-mk_compact admin-events 6    ; mk_dlq admin-events
+# Not compacted (polish wave 3): keyed by org_id, compaction could drop an older
+# erasure_requested before every store's erasure consumer has read it.
+mk admin-events 6 $D365     ; mk_dlq admin-events
 
-echo "topics on ${BROKERS}: ${created} created, ${existed} already present (42 expected in total)"
+# --- learning (polish wave 2): core-api outbox -> agent-runtime-service, core-api memory ---
+mk agent-feedback      12 $D7 ; mk_dlq agent-feedback
+
+echo "topics on ${BROKERS}: ${created} created, ${existed} already present (44 expected in total)"
