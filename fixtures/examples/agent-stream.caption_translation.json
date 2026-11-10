@@ -1,0 +1,22 @@
+{
+  "header": {
+    "event_id": "00000000-0000-4000-8000-0000000000f3",
+    "idempotency_key": "caption:00000000-0000-4000-8000-0000000000e2:es",
+    "org_id": "00000000-0000-4000-8000-000000000001",
+    "schema_version": 1,
+    "producer": "agent-runtime-service",
+    "occurred_at": 1700000000000000,
+    "correlation_id": null,
+    "causation_id": null
+  },
+  "meeting_id": "00000000-0000-4000-8000-0000000000b1",
+  "user_id": "00000000-0000-0000-0000-000000000000",
+  "window_id": "caption:00000000-0000-4000-8000-0000000000e2",
+  "seq": 0,
+  "delta": "Cerramos el presupuesto del tercer trimestre en 120 mil.",
+  "done": true,
+  "kind": "caption_translation",
+  "chunk_id": "00000000-0000-4000-8000-0000000000e2",
+  "language": "es",
+  "status": "translated"
+}

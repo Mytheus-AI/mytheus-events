@@ -2,7 +2,7 @@
   "type": "record",
   "name": "AgentStreamDelta",
   "namespace": "io.nexus.events",
-  "doc": "agent-stream value. Subject: agent-stream-value. Compat: BACKWARD. Net-new (not frozen canon). Streamed LLM token deltas to the UI; throwaway, shed first under backpressure.",
+  "doc": "agent-stream value. Subject: agent-stream-value. Compat: BACKWARD. Net-new (not frozen canon). Transient agent output to the UI through realtime-gateway; throwaway, never persisted. kind=delta (the default, and every record written before kind existed): streamed LLM token deltas for user_id, shed first under backpressure. kind=caption_translation (live translation, polish program wave 3): one live caption final (chunk_id, the transcript-chunks chunk) translated into one language a viewer of the meeting chose; produced by agent-runtime-service (triage tier, budget-gated and metered), user_id is the nil UUID (not addressed to a person: realtime-gateway delivers it only to the sockets in the meeting that chose language), window_id is caption:{chunk_id}, seq 0, done true, delta the translated text (empty unless status is translated).",
   "fields": [
     { "name": "header",     "type": "io.nexus.events.EventEnvelopeHeader" },
     { "name": "meeting_id", "type": { "type": "string", "logicalType": "uuid" } },
@@ -10,6 +10,17 @@
     { "name": "window_id",  "type": "string" },
     { "name": "seq",        "type": "int" },
     { "name": "delta",      "type": "string" },
-    { "name": "done",       "type": "boolean" }
+    { "name": "done",       "type": "boolean" },
+    { "name": "kind",       "type": { "type": "enum", "name": "AgentStreamKind",
+              "symbols": ["delta", "caption_translation"], "default": "delta" },
+              "default": "delta",
+              "doc": "What the record carries. Symbols are appended at the tail only; the enum default delta lets an older reader project a later symbol, and every consumer must ignore kinds it does not handle." },
+    { "name": "chunk_id",   "type": ["null", { "type": "string", "logicalType": "uuid" }], "default": null,
+              "doc": "kind=caption_translation: the transcript-chunks chunk_id (the live caption's chunkId) this translates. Null for delta." },
+    { "name": "language",   "type": ["null", "string"], "default": null,
+              "doc": "kind=caption_translation: the target language, a lowercase ISO 639-1 code (es, fr, de, pt, it, nl, hi, ja, ko, zh, ar, en). Null for delta." },
+    { "name": "status",     "type": ["null", { "type": "enum", "name": "CaptionTranslationStatus",
+              "symbols": ["translated", "budget_denied", "unavailable"], "default": "unavailable" }], "default": null,
+              "doc": "kind=caption_translation: translated (delta holds the text), budget_denied (the workspace's AI budget refused the call; at most one per meeting and language a minute), unavailable (the translation could not be made; the caption stays in its original language). Null for delta." }
   ]
 }
