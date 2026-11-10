@@ -3,6 +3,7 @@
 export type { EventEnvelopeHeader, DlqEnvelope } from "./envelope";
 export type { Action } from "./actions";
 export type { AdminEvent } from "./adminEvents";
+export type { AgentFeedback } from "./agentFeedback";
 export type { AgentRequest } from "./agentRequests";
 export type { AgentResponse } from "./agentResponses";
 export type { AgentResult } from "./agentResults";

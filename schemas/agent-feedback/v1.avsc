@@ -1,0 +1,19 @@
+{
+  "type": "record",
+  "name": "AgentFeedback",
+  "namespace": "io.nexus.events",
+  "doc": "agent-feedback value. Subject: agent-feedback-value. Compat: BACKWARD. Producer core-api (outbox), in the same transaction as the agent_feedback row: one event per person's confirm, dismiss, edit, ask or save of something an agent proposed (a decision or action candidate, a QuestionAgent suggestion, a PersonalListenerAgent note rating, a ContextGapAgent fill). Consumers: agent-runtime-service (refreshes the tenant's thresholds, the guidance examples and the person's memory at once instead of at the cache expiry) and core-api (the person_memory consumer). Polish program wave 2, agents that learn. agent, kind and action are plain strings, not enums, so a new agent or action never sends a lagging consumer's record to the DLQ: consumers must ignore values they do not handle.",
+  "fields": [
+    { "name": "header",       "type": "io.nexus.events.EventEnvelopeHeader" },
+    { "name": "feedback_id",  "type": { "type": "string", "logicalType": "uuid" }, "doc": "agent_feedback.id; the idempotency key is feedback:{feedback_id}." },
+    { "name": "user_id",      "type": { "type": "string", "logicalType": "uuid" }, "doc": "The person who gave the feedback (users.id)." },
+    { "name": "meeting_id",   "type": ["null", { "type": "string", "logicalType": "uuid" }], "default": null, "doc": "The meeting the item came from; null when unknown." },
+    { "name": "agent",        "type": "string", "doc": "The agent class that proposed the item: DecisionAgent, ActionAgent, QuestionAgent, PersonalListenerAgent, ContextGapAgent (open set)." },
+    { "name": "kind",         "type": "string", "doc": "What was acted on: decision, action, suggestion, note, context_fill (open set)." },
+    { "name": "candidate_id", "type": { "type": "string", "logicalType": "uuid" }, "doc": "The id of the decision, action item, suggestion, worklog or collaboration row." },
+    { "name": "action",       "type": "string", "doc": "confirm, dismiss, edit, ask or save (open set). A note rated useful is confirm, not useful is dismiss." },
+    { "name": "confidence",   "type": ["null", "float"], "default": null, "doc": "The agent's confidence on the item, when it has one." },
+    { "name": "content",      "type": ["null", "string"], "default": null, "doc": "The item's text after the action, redacted (emails and phone numbers masked) and at most 280 characters. Null when the person has since asked to forget their memory." },
+    { "name": "edit_json",    "type": ["null", "string"], "default": null, "doc": "action=edit only: JSON object {field: {before, after}} of the fields that changed, each text redacted and at most 280 characters." }
+  ]
+}

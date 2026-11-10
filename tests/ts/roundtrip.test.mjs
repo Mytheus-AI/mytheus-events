@@ -29,8 +29,8 @@ function typeFor(topic) {
   });
 }
 
-test("21 topics round-trip through avsc and preserve org_id", () => {
-  assert.strictEqual(TOPICS.length, 21);
+test("22 topics round-trip through avsc and preserve org_id", () => {
+  assert.strictEqual(TOPICS.length, 22);
   for (const topic of TOPICS) {
     const type = typeFor(topic);
     const rec = readJson(join(FIXTURES, `${topic}.json`));

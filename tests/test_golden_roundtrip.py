@@ -8,7 +8,7 @@ from _schemas import FIXTURES_DIR, TOPICS, load_topic
 
 
 def test_all_21_topics_have_golden_and_roundtrip():
-    assert len(TOPICS) == 21
+    assert len(TOPICS) == 22
     for t in TOPICS:
         schema = load_topic(t)
         with open(os.path.join(FIXTURES_DIR, f"{t}.json")) as f:

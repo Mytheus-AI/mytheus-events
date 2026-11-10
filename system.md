@@ -28,7 +28,7 @@ The Confluent wire format prepends a magic byte + 4-byte schema id to every valu
 
 ## The complete topic taxonomy
 
-All 21 topics (9 PDF-original data-plane + 12 SaaS-scale control-plane/observability). Partition key is `org_id` on **every** topic. The proposed `{org_id}:{meeting_id}` hot-tenant sub-key is **not ratified** and is not used. A paired `<topic>.dlq` (14-day retention) exists for every topic.
+All 22 topics (9 PDF-original data-plane + 12 SaaS-scale control-plane/observability + agent-feedback). Partition key is `org_id` on **every** topic. The proposed `{org_id}:{meeting_id}` hot-tenant sub-key is **not ratified** and is not used. A paired `<topic>.dlq` (14-day retention) exists for every topic.
 
 Every event value opens with the shared `EventEnvelopeHeader` (namespace `io.nexus.events`) then a topic-specific payload. Each topic's value subject is `{topic}-value`.
 
@@ -216,6 +216,15 @@ Every event value opens with the shared `EventEnvelopeHeader` (namespace `io.nex
 - **Retention:** retain (compact)
 - **Avro subject:** `admin-events-value` (schema `AdminEvent`)
 - **Purpose:** Flag changed / tenant suspended / erasure requested. Mirrored to `audit_logs`.
+
+#### `agent-feedback`
+- **Producer:** `core-api` (transactional outbox, with the `agent_feedback` row)
+- **Consumers:** `agent-runtime-service` (refreshes thresholds, guidance examples and person memory caches), `core-api` (incremental `person_memory` consumer)
+- **Partition key:** `org_id`
+- **Retention:** 7 days (delete)
+- **Avro subject:** `agent-feedback-value` (schema `AgentFeedback`)
+- **Idempotency key:** `feedback:{feedback_id}`
+- **Purpose:** A person confirmed, dismissed, edited, asked or saved something an agent proposed (polish wave 2, agents that learn).
 
 > Producer/consumer notes reconciled to `_canon/01-service-catalog.md`: `usage-events` producers are `agent-runtime-service` and `rag-service` **only** (transcription minutes are metered by `billing-metering-service`, not emitted by `transcription-service`). The `admin-events` audit-log write is `admin-ops-service`; there is no `audit-service` in the catalog.
 
