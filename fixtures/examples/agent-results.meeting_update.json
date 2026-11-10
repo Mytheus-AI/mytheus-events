@@ -1,0 +1,24 @@
+{
+  "header": {
+    "event_id": "00000000-0000-4000-8000-0000000000f1",
+    "idempotency_key": "agentresult:00000000-0000-4000-8000-0000000000b1:w-000012:00000000-0000-4000-8000-0000000000b2:MeetingAgent",
+    "org_id": "00000000-0000-4000-8000-000000000001",
+    "schema_version": 1,
+    "producer": "agent-runtime-service",
+    "occurred_at": 1700000000000000,
+    "correlation_id": null,
+    "causation_id": null
+  },
+  "meeting_id": "00000000-0000-4000-8000-0000000000b1",
+  "window_id": "w-000012",
+  "user_id": "00000000-0000-4000-8000-0000000000b2",
+  "agent": "MeetingAgent",
+  "kind": "meeting_update",
+  "relevance_score": 1.0,
+  "confidence": 0.9,
+  "content": "Budget review covered; hiring plan in progress.",
+  "payload_json": "{\"updates\": [{\"item_id\": \"00000000-0000-4000-8000-0000000000c1\", \"status\": \"covered\", \"note\": \"Q3 budget agreed at 120k; finance to confirm the vendor split.\"}, {\"item_id\": \"00000000-0000-4000-8000-0000000000c2\", \"status\": \"in_progress\", \"note\": \"Hiring plan discussion started.\"}], \"nudge\": {\"id\": \"00000000-0000-4000-8000-0000000000d1\", \"type\": \"over_time\", \"item_id\": \"00000000-0000-4000-8000-0000000000c1\", \"content\": \"Budget review ran past its 10 minutes.\"}, \"surfaced\": true}",
+  "source_chunk_ids": [
+    "00000000-0000-4000-8000-0000000000e1"
+  ]
+}

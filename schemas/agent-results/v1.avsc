@@ -9,13 +9,15 @@
     { "name": "window_id",       "type": "string" },
     { "name": "user_id",         "type": { "type": "string", "logicalType": "uuid" } },
     { "name": "agent",           "type": { "type": "enum", "name": "AgentClass",
-              "symbols": ["PersonalListenerAgent", "DecisionAgent", "ActionAgent", "QuestionAgent", "ContextGapAgent", "ProactiveAgent"] } },
+              "symbols": ["PersonalListenerAgent", "DecisionAgent", "ActionAgent", "QuestionAgent", "ContextGapAgent", "ProactiveAgent", "MeetingAgent"] },
+              "doc": "The agent class that produced this result. Symbols are appended at the tail only (MeetingAgent: ADR-0038). Deliberately no enum default: Avro consults the READER's default, so a default could never help a reader older than the symbol, and for a later symbol it would silently relabel another agent's output as an existing agent (per-agent thresholds, routing, inbox-claimed and then unreplayable). A reader that projects onto an older schema fails instead and the record goes to the DLQ, replayable once the consumer is upgraded. Consumers decode with the writer schema and must ignore (agent, kind) pairs they do not handle." },
     { "name": "kind",            "type": { "type": "enum", "name": "AgentResultKind",
-              "symbols": ["note", "decision_candidate", "action_candidate", "suggestion", "alert", "context_fill"], "default": "note" } },
+              "symbols": ["note", "decision_candidate", "action_candidate", "suggestion", "alert", "context_fill", "meeting_update"], "default": "note" },
+              "doc": "Result kind; selects the payload_json shape. Symbols are appended at the tail only, with enum default note (context_fill: ADR-0035; meeting_update: ADR-0038, MeetingAgent only)." },
     { "name": "relevance_score", "type": "float" },
     { "name": "confidence",      "type": "float" },
     { "name": "content",         "type": "string" },
-    { "name": "payload_json",    "type": "string", "doc": "Free-form per kind." },
+    { "name": "payload_json",    "type": "string", "doc": "JSON object, shape per kind (free-form for kinds not listed here). kind=meeting_update (agent=MeetingAgent, user_id=the host, at most one record per meeting per window, ADR-0038 D7): {\"updates\": [{\"item_id\": uuid, \"status\": \"in_progress\"|\"covered\", \"note\": string up to 300 chars}] (at most one entry per item_id), \"nudge\": {\"id\": uuid, \"type\": \"off_agenda\"|\"over_time\"|\"unaddressed\", \"item_id\": uuid|null, \"content\": string up to 200 chars} | null, \"surfaced\": true}. No record is emitted for a window with nothing to say, so updates is non-empty or nudge is non-null. core-api applies each updates entry to meeting_agenda_items (never over a host-set status, never covered back to in_progress); the nudge is not persisted and realtime-gateway delivers it to the host only." },
     { "name": "source_chunk_ids","type": { "type": "array", "items": { "type": "string", "logicalType": "uuid" } } }
   ]
 }
