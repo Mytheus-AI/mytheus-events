@@ -6,7 +6,7 @@ Asserts:
     the composite {org_id}:{meeting_id} key on transcript-chunks/agent-stream — ADR-0017 in
     mytheus-docs. This check does not distinguish the two cases: org_id must be present and
     non-nullable regardless of which partition-key shape a topic uses).
-  - exactly 21 topic schema folders, matching the canonical topic set.
+  - exactly 22 topic schema folders, matching the canonical topic set.
   - every topic value's first field is `header` typed io.nexus.events.EventEnvelopeHeader.
   - every .avsc parses (this rejects invalid Avro, e.g. dotted enum symbols).
   - Decision/Action status enum symbols == ['confirmed'] (no-silent-commits, structural).
@@ -42,13 +42,13 @@ def main() -> int:
             "composite {org_id}:{meeting_id} key on transcript-chunks/agent-stream, ADR-0017)"
         )
 
-    # 2. Exactly 21 topic folders matching the canonical set.
+    # 2. Exactly 22 topic folders matching the canonical set.
     topic_dirs = sorted(
         d for d in os.listdir(SCHEMAS_DIR)
         if not d.startswith("_") and os.path.isdir(os.path.join(SCHEMAS_DIR, d))
     )
-    if len(topic_dirs) != 21:
-        errors.append(f"expected 21 topic folders, found {len(topic_dirs)}: {topic_dirs}")
+    if len(topic_dirs) != 22:
+        errors.append(f"expected 22 topic folders, found {len(topic_dirs)}: {topic_dirs}")
     for missing in sorted(set(TOPICS) - set(topic_dirs)):
         errors.append(f"missing topic schema folder: {missing}")
     for extra in sorted(set(topic_dirs) - set(TOPICS)):

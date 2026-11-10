@@ -16,9 +16,9 @@ def test_subject_per_topic_named_value_backward():
         assert d["compatibility"] == "BACKWARD"
 
 
-def test_exactly_21_subjects():
+def test_exactly_22_subjects():
     subs = glob.glob(os.path.join(SUBJECTS_DIR, "*-value.json"))
-    assert len(subs) == 21
+    assert len(subs) == 22
 
 
 def test_every_value_record_starts_with_header():

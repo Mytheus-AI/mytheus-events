@@ -48,6 +48,7 @@ Every topic is partitioned by `org_id` (the tenant UUID string). Delivery is **a
 | `notification-delivery-events` | `notification-service` | `admin-ops-service`, `core-api` | `org_id` | Delivery receipts |
 | `user-sync-events` | `identity-tenant-service` (Clerk inbox) | `identity-tenant-service` | `org_id` | Clerk webhook user-sync inbox |
 | `admin-events` | `admin-ops-service` | `workflow-service`, `admin-ops-service` (audit-log write) | `org_id` | Flag changed / tenant suspended / erasure requested |
+| `agent-feedback` | `core-api` (outbox) | `agent-runtime-service`, `core-api` (person memory) | `org_id` | A person confirmed, dismissed, edited, asked or saved something an agent proposed (polish wave 2) |
 
 > Producer/consumer assignments are reconciled to the canon. Notably: `usage-events` is produced **only** by `agent-runtime-service` and `rag-service`; the `admin-events` audit-log write lands in `admin-ops-service` (there is no separate `audit-service`).
 
@@ -98,11 +99,11 @@ make register            # publishes {topic}-value to the Schema Registry
 make codegen             # Python (pydantic/dataclasses) + TypeScript types
 ```
 
-### Counts: 21 topics, 22 directory entries
+### Counts: 22 topics, 23 directory entries
 
-`schemas/` holds 22 entries: the 21 topic folders plus `_envelope/` (the shared
-`EventEnvelopeHeader`, not a topic). `subjects/` holds 22 files: 21 `{topic}-value.json` plus
-`compatibility.json`. `make create-topics` creates 21 topics + 21 `.dlq` = 42.
+`schemas/` holds 23 entries: the 22 topic folders plus `_envelope/` (the shared
+`EventEnvelopeHeader`, not a topic). `subjects/` holds 23 files: 22 `{topic}-value.json` plus
+`compatibility.json`. `make create-topics` creates 22 topics + 22 `.dlq` = 44.
 `tests/test_topics_consistency.py` pins all of this, including that `scripts/create_topics.sh`
 matches `schemas/` and the partition counts (07-event-architecture.md 4.2; canon 03 has
 retention only) and retention (canon 03) in `mytheus-docs`.

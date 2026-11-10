@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Create the 21 NEXUS topics + their paired <topic>.dlq, with the canonical partition counts
+# Create the 22 NEXUS topics + their paired <topic>.dlq, with the canonical partition counts
 # and retention from 07-event-architecture.md 4.2 and _canon/03-event-taxonomy.md.
 #
 # IDEMPOTENT: safe to re-run against a cluster that already has some or all of the topics.
@@ -74,4 +74,7 @@ mk notification-delivery-events 6 $D30; mk_dlq notification-delivery-events
 mk user-sync-events     6 $D7 ; mk_dlq user-sync-events
 mk_compact admin-events 6    ; mk_dlq admin-events
 
-echo "topics on ${BROKERS}: ${created} created, ${existed} already present (42 expected in total)"
+# --- learning (polish wave 2): core-api outbox -> agent-runtime-service, core-api memory ---
+mk agent-feedback      12 $D7 ; mk_dlq agent-feedback
+
+echo "topics on ${BROKERS}: ${created} created, ${existed} already present (44 expected in total)"

@@ -1,0 +1,22 @@
+{
+  "header": {
+    "event_id": "00000000-0000-4000-8000-0000000000aa",
+    "idempotency_key": "feedback:feedback_id",
+    "org_id": "00000000-0000-4000-8000-000000000001",
+    "schema_version": 1,
+    "producer": "sample-service",
+    "occurred_at": 1700000000000000,
+    "correlation_id": null,
+    "causation_id": null
+  },
+  "feedback_id": "00000000-0000-4000-8000-0000000000aa",
+  "user_id": "00000000-0000-4000-8000-0000000000aa",
+  "meeting_id": "00000000-0000-4000-8000-0000000000aa",
+  "agent": "agent",
+  "kind": "kind",
+  "candidate_id": "00000000-0000-4000-8000-0000000000aa",
+  "action": "action",
+  "confidence": 0.9,
+  "content": "content",
+  "edit_json": "edit_json"
+}
