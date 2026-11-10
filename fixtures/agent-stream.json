@@ -14,5 +14,9 @@
   "window_id": "window_id",
   "seq": 1,
   "delta": "delta",
-  "done": true
+  "done": true,
+  "kind": "delta",
+  "chunk_id": "00000000-0000-4000-8000-0000000000aa",
+  "language": "language",
+  "status": "translated"
 }

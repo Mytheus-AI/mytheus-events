@@ -49,8 +49,33 @@ def _meeting_update(window_id: str, event_id: str, payload: dict, content: str) 
     }
 
 
+# Live translation (polish program wave 3): one caption final translated into one language a
+# viewer chose. Not addressed to a person (user_id is the nil UUID); the idempotency key names
+# the chunk and the language, so a redelivered record is the same fact.
+_NIL = "00000000-0000-0000-0000-000000000000"
+_CAPTION_CHUNK = "00000000-0000-4000-8000-0000000000e2"
+
+
+def _caption_translation(event_id: str, language: str, status: str, text: str) -> dict:
+    return {
+        "header": {"event_id": event_id,
+                   "idempotency_key": f"caption:{_CAPTION_CHUNK}:{language}",
+                   "producer": "agent-runtime-service"},
+        "meeting_id": _MEETING, "user_id": _NIL, "window_id": f"caption:{_CAPTION_CHUNK}",
+        "seq": 0, "delta": text, "done": True, "kind": "caption_translation",
+        "chunk_id": _CAPTION_CHUNK, "language": language, "status": status,
+    }
+
+
 # name -> (topic, overrides applied on top of the synthesized golden for that topic).
 EXAMPLES: dict[str, tuple[str, dict]] = {
+    "agent-stream.caption_translation": ("agent-stream", _caption_translation(
+        "00000000-0000-4000-8000-0000000000f3", "es", "translated",
+        "Cerramos el presupuesto del tercer trimestre en 120 mil.",
+    )),
+    "agent-stream.caption_translation.budget_denied": ("agent-stream", _caption_translation(
+        "00000000-0000-4000-8000-0000000000f4", "fr", "budget_denied", "",
+    )),
     "agent-results.meeting_update": ("agent-results", _meeting_update(
         "w-000012", "00000000-0000-4000-8000-0000000000f1",
         {
@@ -159,7 +184,8 @@ def main() -> None:
         schemaless_writer(buf, parsed, record)
         buf.seek(0)
         back = schemaless_reader(buf, parsed)
-        assert back["agent"] == record["agent"] and back["kind"] == record["kind"], name
+        assert back.get("agent") == record.get("agent"), name
+        assert back.get("kind") == record.get("kind"), name
         with open(os.path.join(EXAMPLES_DIR, f"{name}.json"), "w") as f:
             json.dump(record, f, indent=2)
             f.write("\n")

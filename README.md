@@ -30,7 +30,7 @@ Every topic is partitioned by `org_id` (the tenant UUID string). Delivery is **a
 | `notifications` | multiple | `notification-service`, `realtime-gateway` | `org_id` | Cross-channel notification intents |
 | `agent-requests` | `agent-runtime-service` | `agent-runtime-service` (peer agents) | `org_id` | Agent-to-agent context-fill requests |
 | `agent-responses` | `agent-runtime-service` | `agent-runtime-service` (requester) | `org_id` | Agent-to-agent context-fill responses |
-| `agent-stream` | `agent-runtime-service` (LiteLLM stream bridge) | `realtime-gateway` → WebSocket | `org_id` | Streamed LLM token deltas to the UI |
+| `agent-stream` | `agent-runtime-service` (LiteLLM stream bridge) | `realtime-gateway` → WebSocket | `org_id` | Streamed LLM token deltas to the UI, and live caption translations (`kind=caption_translation`) |
 
 ### Control-plane & observability topics (SaaS-scale)
 

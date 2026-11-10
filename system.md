@@ -114,6 +114,7 @@ Every event value opens with the shared `EventEnvelopeHeader` (namespace `io.nex
 - **Retention:** 1 hour (delete)
 - **Avro subject:** `agent-stream-value` (schema `AgentStreamDelta` †)
 - **Purpose:** Streamed LLM token deltas to the UI. Throwaway; shed first under backpressure.
+- **Kinds:** `kind` (enum `AgentStreamKind`, default `delta`) selects the record. `delta` is the token delta above. `caption_translation` (polish wave 3, live translation) is one live caption final translated into one language a viewer chose: `chunk_id` (the `transcript-chunks` chunk), `language` (ISO 639-1), `status` (`translated` | `budget_denied` | `unavailable`), `delta` = the text, `user_id` = the nil UUID, `window_id` = `caption:{chunk_id}`, idempotency key `caption:{chunk_id}:{language}`. realtime-gateway delivers it only to the meeting's sockets that chose that language; it is never persisted.
 
 > † `DocumentChunk` and `AgentStreamDelta` are net-new schema names for the `document-chunks` chunk envelope and the `agent-stream` token-delta envelope; they are **not** frozen canon. Canon freezes only seven schema names: `TranscriptChunk`, `AgentResult`, `Decision`, `Action`, `Notification`, `AgentRequest`, `AgentResponse`. The `Tenant/Meeting/…Event` names below are likewise net-new.
 
