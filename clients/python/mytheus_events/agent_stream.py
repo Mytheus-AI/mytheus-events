@@ -15,3 +15,7 @@ class AgentStreamDelta(BaseModel):
     seq: int
     delta: str
     done: bool
+    kind: Literal['delta', 'caption_translation'] = 'delta'
+    chunk_id: Optional[str] = None
+    language: Optional[str] = None
+    status: Optional[Literal['translated', 'budget_denied', 'unavailable']] = None

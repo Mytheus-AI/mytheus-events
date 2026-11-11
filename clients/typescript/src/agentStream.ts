@@ -11,4 +11,8 @@ export interface AgentStreamDelta {
   seq: number;
   delta: string;
   done: boolean;
+  kind: "delta" | "caption_translation";
+  chunk_id?: string | null;
+  language?: string | null;
+  status?: "translated" | "budget_denied" | "unavailable" | null;
 }

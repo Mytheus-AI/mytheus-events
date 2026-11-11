@@ -1,0 +1,22 @@
+{
+  "header": {
+    "event_id": "00000000-0000-4000-8000-0000000000f4",
+    "idempotency_key": "caption:00000000-0000-4000-8000-0000000000e2:fr",
+    "org_id": "00000000-0000-4000-8000-000000000001",
+    "schema_version": 1,
+    "producer": "agent-runtime-service",
+    "occurred_at": 1700000000000000,
+    "correlation_id": null,
+    "causation_id": null
+  },
+  "meeting_id": "00000000-0000-4000-8000-0000000000b1",
+  "user_id": "00000000-0000-0000-0000-000000000000",
+  "window_id": "caption:00000000-0000-4000-8000-0000000000e2",
+  "seq": 0,
+  "delta": "",
+  "done": true,
+  "kind": "caption_translation",
+  "chunk_id": "00000000-0000-4000-8000-0000000000e2",
+  "language": "fr",
+  "status": "budget_denied"
+}
