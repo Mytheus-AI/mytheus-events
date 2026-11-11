@@ -1,0 +1,27 @@
+{
+  "header": {
+    "event_id": "00000000-0000-4000-8000-0000000000f6",
+    "idempotency_key": "agentresult:00000000-0000-4000-8000-0000000000b1:room-signals:9c1e7b443f2a:00000000-0000-0000-0000-000000000000:MeetingAgent",
+    "org_id": "00000000-0000-4000-8000-000000000001",
+    "schema_version": 1,
+    "producer": "agent-runtime-service",
+    "occurred_at": 1700000000000000,
+    "correlation_id": null,
+    "causation_id": null
+  },
+  "meeting_id": "00000000-0000-4000-8000-0000000000b1",
+  "window_id": "room-signals:9c1e7b443f2a",
+  "user_id": "00000000-0000-0000-0000-000000000000",
+  "agent": "MeetingAgent",
+  "kind": "room_signals",
+  "relevance_score": 1.0,
+  "confidence": 1.0,
+  "content": "",
+  "payload_json": "{\"generation\": \"9c1e7b443f2a\", \"status\": \"ready\", \"prompt_versions\": {\"last_word\": \"last_word@v1\", \"consensus\": \"consensus_read@v1\", \"resume_point\": \"resume_point@v1\"}, \"last_word\": [{\"user_id\": \"00000000-0000-4000-8000-0000000000b3\", \"kind\": \"cut_off\", \"topic\": \"pricing for the enterprise tier\", \"quote\": \"I just want to say the enterprise tier\", \"at_ms\": 1204000, \"end_ms\": 1206500, \"decision_id\": \"00000000-0000-4000-8000-0000000000a7\", \"signal_ids\": []}, {\"user_id\": \"00000000-0000-4000-8000-0000000000b4\", \"kind\": \"hand_not_called\", \"topic\": \"the migration risk\", \"quote\": null, \"at_ms\": 2310000, \"end_ms\": 2402000, \"decision_id\": null, \"signal_ids\": [\"00000000-0000-4000-8000-0000000000c1\"]}], \"consensus\": [{\"decision_id\": \"00000000-0000-4000-8000-0000000000a7\", \"strength\": \"weak\", \"participants\": 5, \"yes\": 2, \"hedged\": 1, \"silent\": 1, \"objected\": 0, \"talked_over\": 1, \"ask\": [{\"user_id\": \"00000000-0000-4000-8000-0000000000b3\", \"reason\": \"talked_over\"}, {\"user_id\": \"00000000-0000-4000-8000-0000000000b4\", \"reason\": \"hedged\"}]}], \"resume_point\": {\"reason\": \"cut_off\", \"topic\": \"the migration risk\", \"agenda_item_id\": \"00000000-0000-4000-8000-0000000000c2\", \"positions\": [{\"user_id\": \"00000000-0000-4000-8000-0000000000b3\", \"quote\": \"We can move the billing tables first and keep reads on the old cluster.\", \"start_ms\": 3301000, \"end_ms\": 3309000}, {\"user_id\": \"00000000-0000-4000-8000-0000000000b4\", \"quote\": \"The problem is the replication lag on the old cluster\", \"start_ms\": 3312000, \"end_ms\": 3318000}], \"cut_off\": {\"user_id\": \"00000000-0000-4000-8000-0000000000b4\", \"quote\": \"The problem is the replication lag on the old cluster\", \"start_ms\": 3312000, \"end_ms\": 3318000}}}",
+  "source_chunk_ids": [],
+  "moment_id": "00000000-0000-4000-8000-0000000000aa",
+  "why": "why",
+  "updates_candidate_id": "00000000-0000-4000-8000-0000000000aa",
+  "window_start_ms": 1,
+  "window_end_ms": 1
+}

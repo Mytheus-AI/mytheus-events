@@ -127,6 +127,62 @@ def _minutes(user_id: str, event_id: str, payload: dict) -> dict:
     }
 
 
+# Room signals ("After the meeting" layer 1): after the meeting ended, one MeetingAgent record
+# per meeting (user_id = the nil uuid), window_id "room-signals:{generation}": the last word
+# nudges, the agreement reads per decision and the resume point for the next meeting.
+_RS_GENERATION = "9c1e7b443f2a"
+_RAJ = "00000000-0000-4000-8000-0000000000b4"
+_SIGNAL = "00000000-0000-4000-8000-0000000000c1"
+_AGENDA = "00000000-0000-4000-8000-0000000000c2"
+
+
+def _room_signals(event_id: str, payload: dict) -> dict:
+    window_id = f"room-signals:{payload['generation']}"
+    return {
+        "header": {"event_id": event_id,
+                   "idempotency_key": f"agentresult:{_MEETING}:{window_id}:{_NIL}:MeetingAgent",
+                   "producer": "agent-runtime-service"},
+        "meeting_id": _MEETING, "window_id": window_id, "user_id": _NIL,
+        "agent": "MeetingAgent", "kind": "room_signals",
+        "relevance_score": 1.0, "confidence": 1.0, "content": "",
+        "payload_json": json.dumps(payload), "source_chunk_ids": [],
+    }
+
+
+_ROOM_SIGNALS_READY = {
+    "generation": _RS_GENERATION,
+    "status": "ready",
+    "prompt_versions": {"last_word": "last_word@v1", "consensus": "consensus_read@v1",
+                        "resume_point": "resume_point@v1"},
+    "last_word": [
+        {"user_id": _PERSON, "kind": "cut_off", "topic": "pricing for the enterprise tier",
+         "quote": "I just want to say the enterprise tier", "at_ms": 1_204_000,
+         "end_ms": 1_206_500, "decision_id": _DECISION, "signal_ids": []},
+        {"user_id": _RAJ, "kind": "hand_not_called", "topic": "the migration risk",
+         "quote": None, "at_ms": 2_310_000, "end_ms": 2_402_000, "decision_id": None,
+         "signal_ids": [_SIGNAL]},
+    ],
+    "consensus": [
+        {"decision_id": _DECISION, "strength": "weak", "participants": 5, "yes": 2, "hedged": 1,
+         "silent": 1, "objected": 0, "talked_over": 1,
+         "ask": [{"user_id": _PERSON, "reason": "talked_over"},
+                 {"user_id": _RAJ, "reason": "hedged"}]},
+    ],
+    "resume_point": {
+        "reason": "cut_off", "topic": "the migration risk", "agenda_item_id": _AGENDA,
+        "positions": [
+            {"user_id": _PERSON, "quote": "We can move the billing tables first and keep reads on the old cluster.",
+             "start_ms": 3_301_000, "end_ms": 3_309_000},
+            {"user_id": _RAJ, "quote": "The problem is the replication lag on the old cluster",
+             "start_ms": 3_312_000, "end_ms": 3_318_000},
+        ],
+        "cut_off": {"user_id": _RAJ,
+                    "quote": "The problem is the replication lag on the old cluster",
+                    "start_ms": 3_312_000, "end_ms": 3_318_000},
+    },
+}
+
+
 # Live translation (polish program wave 3): one caption final translated into one language a
 # viewer chose. Not addressed to a person (user_id is the nil UUID); the idempotency key names
 # the chunk and the language, so a redelivered record is the same fact.
@@ -203,6 +259,26 @@ EXAMPLES: dict[str, tuple[str, dict]] = {
             "scope": "shared", "prompt_version": "minutes@v1", "generation": _GENERATION,
             "status": "unavailable", "reason": "budget", "summary": "", "decisions": [],
             "open_items": [], "unanswered_questions": [], "promises": [],
+        },
+    )),
+    "agent-results.room_signals": ("agent-results", _room_signals(
+        "00000000-0000-4000-8000-0000000000f6", _ROOM_SIGNALS_READY,
+    )),
+    "agent-results.room_signals.partial": ("agent-results", _room_signals(
+        "00000000-0000-4000-8000-0000000000f7",
+        {
+            "generation": _RS_GENERATION, "status": "partial",
+            "prompt_versions": {"last_word": None, "consensus": None, "resume_point": None},
+            "last_word": [
+                {"user_id": _RAJ, "kind": "hand_not_called", "topic": "what the room was discussing",
+                 "quote": None, "at_ms": 2_310_000, "end_ms": 2_402_000, "decision_id": None,
+                 "signal_ids": [_SIGNAL]},
+            ],
+            "consensus": [],
+            "resume_point": {
+                "reason": "agenda_unfinished", "topic": "Migration plan", "agenda_item_id": _AGENDA,
+                "positions": [], "cut_off": None,
+            },
         },
     )),
 }

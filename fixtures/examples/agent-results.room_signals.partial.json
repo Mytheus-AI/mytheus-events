@@ -1,0 +1,27 @@
+{
+  "header": {
+    "event_id": "00000000-0000-4000-8000-0000000000f7",
+    "idempotency_key": "agentresult:00000000-0000-4000-8000-0000000000b1:room-signals:9c1e7b443f2a:00000000-0000-0000-0000-000000000000:MeetingAgent",
+    "org_id": "00000000-0000-4000-8000-000000000001",
+    "schema_version": 1,
+    "producer": "agent-runtime-service",
+    "occurred_at": 1700000000000000,
+    "correlation_id": null,
+    "causation_id": null
+  },
+  "meeting_id": "00000000-0000-4000-8000-0000000000b1",
+  "window_id": "room-signals:9c1e7b443f2a",
+  "user_id": "00000000-0000-0000-0000-000000000000",
+  "agent": "MeetingAgent",
+  "kind": "room_signals",
+  "relevance_score": 1.0,
+  "confidence": 1.0,
+  "content": "",
+  "payload_json": "{\"generation\": \"9c1e7b443f2a\", \"status\": \"partial\", \"prompt_versions\": {\"last_word\": null, \"consensus\": null, \"resume_point\": null}, \"last_word\": [{\"user_id\": \"00000000-0000-4000-8000-0000000000b4\", \"kind\": \"hand_not_called\", \"topic\": \"what the room was discussing\", \"quote\": null, \"at_ms\": 2310000, \"end_ms\": 2402000, \"decision_id\": null, \"signal_ids\": [\"00000000-0000-4000-8000-0000000000c1\"]}], \"consensus\": [], \"resume_point\": {\"reason\": \"agenda_unfinished\", \"topic\": \"Migration plan\", \"agenda_item_id\": \"00000000-0000-4000-8000-0000000000c2\", \"positions\": [], \"cut_off\": null}}",
+  "source_chunk_ids": [],
+  "moment_id": "00000000-0000-4000-8000-0000000000aa",
+  "why": "why",
+  "updates_candidate_id": "00000000-0000-4000-8000-0000000000aa",
+  "window_start_ms": 1,
+  "window_end_ms": 1
+}
