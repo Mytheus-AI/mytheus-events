@@ -88,3 +88,23 @@ test("agent-results minutes examples round-trip through avsc (MeetingAgent minut
     if (payload.scope === "shared") assert.deepStrictEqual(payload.promises, [], f);
   }
 });
+
+test("agent-results room_signals examples round-trip through avsc (MeetingAgent room_signals)", () => {
+  const dir = join(FIXTURES, "examples");
+  const files = readdirSync(dir).filter(
+    (f) => f.startsWith("agent-results.room_signals") && f.endsWith(".json"),
+  );
+  assert.strictEqual(files.length, 2, "expected the ready and partial room signals");
+  const type = typeFor("agent-results");
+  for (const f of files) {
+    const rec = readJson(join(dir, f));
+    const back = type.fromBuffer(type.toBuffer(rec));
+    assert.strictEqual(back.agent, "MeetingAgent", f);
+    assert.strictEqual(back.kind, "room_signals", f);
+    assert.strictEqual(back.user_id, "00000000-0000-0000-0000-000000000000", f);
+    const payload = JSON.parse(back.payload_json);
+    assert.ok(["ready", "partial"].includes(payload.status), f);
+    const people = payload.last_word.map((e) => e.user_id);
+    assert.strictEqual(new Set(people).size, people.length, f);
+  }
+});
