@@ -24,3 +24,5 @@ class AgentResult(BaseModel):
     updates_candidate_id: Optional[str] = None
     window_start_ms: Optional[int] = None
     window_end_ms: Optional[int] = None
+    prompt_version: Optional[str] = None
+    model_id: Optional[str] = None

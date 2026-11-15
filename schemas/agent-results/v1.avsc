@@ -28,6 +28,10 @@
     { "name": "window_start_ms", "type": ["null", "long"], "default": null,
               "doc": "Meeting-time start of the window the record was produced from (the clock of transcript_chunks.start_ms); window_id is {meeting_id}:{window_start_ms} for windowed records. Null for event-driven records (ProactiveAgent)." },
     { "name": "window_end_ms",   "type": ["null", "long"], "default": null,
-              "doc": "Meeting-time end of that window." }
+              "doc": "Meeting-time end of that window." },
+    { "name": "prompt_version",  "type": ["null", "string"], "default": null,
+              "doc": "Attribution (journal plan Part 3 fix 11): the PromptLoader key@version that produced this record, e.g. decision@v3. Null when no prompt was involved or the producer predates the field. With model_id it makes every card reproducible and attributable to the exact prompt and model." },
+    { "name": "model_id",        "type": ["null", "string"], "default": null,
+              "doc": "Attribution: the exact model id the LLM call ran on (e.g. claude-haiku-5-5), as the router resolved it, not the tier name. Null when no model was called (rules-only records) or the producer predates the field." }
   ]
 }
