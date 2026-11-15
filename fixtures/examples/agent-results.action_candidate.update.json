@@ -25,5 +25,7 @@
   "why": "Refines an earlier card",
   "updates_candidate_id": "00000000-0000-4000-8000-0000000000a1",
   "window_start_ms": 752000,
-  "window_end_ms": 757900
+  "window_end_ms": 757900,
+  "prompt_version": "prompt_version",
+  "model_id": "model_id"
 }

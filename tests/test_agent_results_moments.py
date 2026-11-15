@@ -50,7 +50,12 @@ def _example():
 
 
 def test_the_new_fields_are_optional_nullable_and_at_the_tail():
-    fields = load_raw(topic_schema_path("agent-results"))["fields"]
+    # The attribution fields (test_agent_results_attribution.py) were appended after these.
+    fields = [
+        f
+        for f in load_raw(topic_schema_path("agent-results"))["fields"]
+        if f["name"] not in ("prompt_version", "model_id")
+    ]
     assert tuple(f["name"] for f in fields[-len(NEW_FIELDS):]) == NEW_FIELDS
     for f in fields[-len(NEW_FIELDS):]:
         assert isinstance(f["type"], list) and f["type"][0] == "null", f["name"]

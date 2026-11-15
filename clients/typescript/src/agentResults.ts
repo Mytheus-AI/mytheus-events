@@ -20,4 +20,6 @@ export interface AgentResult {
   updates_candidate_id?: string | null;
   window_start_ms?: number | null;
   window_end_ms?: number | null;
+  prompt_version?: string | null;
+  model_id?: string | null;
 }

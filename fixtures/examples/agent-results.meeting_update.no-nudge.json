@@ -25,5 +25,7 @@
   "why": null,
   "updates_candidate_id": null,
   "window_start_ms": null,
-  "window_end_ms": null
+  "window_end_ms": null,
+  "prompt_version": "prompt_version",
+  "model_id": "model_id"
 }
